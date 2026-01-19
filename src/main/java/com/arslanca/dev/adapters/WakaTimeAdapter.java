@@ -1,17 +1,16 @@
 package com.arslanca.dev.adapters;
 
 import com.arslanca.dev.adapters.models.WakaTimeResponse;
-import com.arslanca.dev.adapters.models.WakaTimeStatsResponse;
+import com.arslanca.dev.adapters.models.WakaTimeSummariesResponse;
 import com.arslanca.dev.business.responses.StatsResponse;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class WakaTimeAdapter {
@@ -19,18 +18,36 @@ public class WakaTimeAdapter {
     @Value("${WAKA_KEY}")
     private String apiKey;
 
-    private final String BASE_URL = "https://wakatime.com/api/v1/users/current";
+    private static final String BASE_URL = "https://wakatime.com/api/v1/users/current";
     private final RestTemplate restTemplate = new RestTemplate();
+    private StatsResponse lastResponse = StatsResponse.builder().isCodingNow(false).build();
+    private final AtomicLong lastFetchTime = new AtomicLong(0);
+    private static final long RATE_LIMIT_MS = 60000;
 
-    @Cacheable(value = "status-waka")
-    @Scheduled(fixedRate = 600000)
+    @PostConstruct
+    public void init() {
+        refreshWakaTimeStats();
+    }
+
     public StatsResponse getCurrentStatus() {
-        String statsUrl = BASE_URL + "/stats/all_time?api_key=" + apiKey;
+        long now = System.currentTimeMillis();
+        if (now - lastFetchTime.get() > RATE_LIMIT_MS) {
+            synchronized (this) {
+                if (now - lastFetchTime.get() > RATE_LIMIT_MS) {
+                    refreshWakaTimeStats();
+                }
+            }
+        }
+        return lastResponse;
+    }
+
+    private void refreshWakaTimeStats() {
+        String summariesUrl = BASE_URL + "/summaries?start=today&end=today&api_key=" + apiKey;
         String heartbeatsUrl = BASE_URL + "/heartbeats?date=today&api_key=" + apiKey;
 
         try {
             WakaTimeResponse hbResponse = restTemplate.getForObject(heartbeatsUrl, WakaTimeResponse.class);
-            WakaTimeStatsResponse statsResponse = restTemplate.getForObject(statsUrl, WakaTimeStatsResponse.class);
+            WakaTimeSummariesResponse summariesResponse = restTemplate.getForObject(summariesUrl, WakaTimeSummariesResponse.class);
 
             var responseBuilder = StatsResponse.builder();
             String currentProjectName = null;
@@ -53,14 +70,19 @@ public class WakaTimeAdapter {
                 responseBuilder.isCodingNow(false);
             }
 
-            if (statsResponse != null && statsResponse.getData() != null) {
+            if (summariesResponse != null && summariesResponse.getData() != null && !summariesResponse.getData().isEmpty()) {
+                var todaySummary = summariesResponse.getData().get(0);
 
-                responseBuilder.totalSpentOnAllProjects(statsResponse.getData().getHuman_readable_total());
+                if (todaySummary.getGrand_total() != null) {
+                    responseBuilder.totalSpentOnAllProjects(todaySummary.getGrand_total().getText());
+                } else {
+                     responseBuilder.totalSpentOnAllProjects("0 mins");
+                }
 
-                if (currentProjectName != null && statsResponse.getData().getProjects() != null) {
+                if (currentProjectName != null && todaySummary.getProjects() != null) {
                     String finalCurrentProjectName = currentProjectName;
 
-                    Optional<WakaTimeStatsResponse.ProjectStat> projectStat = statsResponse.getData().getProjects().stream()
+                    var projectStat = todaySummary.getProjects().stream()
                             .filter(p -> p.getName().equalsIgnoreCase(finalCurrentProjectName))
                             .findFirst();
 
@@ -70,13 +92,15 @@ public class WakaTimeAdapter {
                         responseBuilder.totalSpentOnCurrentProject("Just started");
                     }
                 }
+            } else {
+                 responseBuilder.totalSpentOnAllProjects("0 mins");
             }
 
-            return responseBuilder.build();
+            lastResponse = responseBuilder.build();
+            lastFetchTime.set(System.currentTimeMillis());
 
         } catch (Exception e) {
-            System.err.println("WakaTime API Hatası: " + e.getMessage());
-            return StatsResponse.builder().isCodingNow(false).build();
+            System.err.println("WakaTime API Hata veya Rate Limit: " + e.getMessage());
         }
     }
 

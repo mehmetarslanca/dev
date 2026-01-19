@@ -69,11 +69,10 @@ export function PortfolioPage() {
           className="max-w-3xl mb-16"
         >
           <h1 className="text-3xl md:text-5xl tracking-tight mb-4">
-            Selected Work
+            Builds & Iterations / Grind
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground">
-            A collection of projects showcasing my journey as a developer. 
-            Each project represents a challenge solved and a lesson learned.
+            Building the foundation, one commit at a time. These projects document my journey from core concepts to scalable solutions.
           </p>
         </motion.div>
 
@@ -179,20 +178,6 @@ export function PortfolioPage() {
             ))}
           </div>
         )}
-
-        {/* API Integration Note */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-12 p-6 rounded-lg border border-border bg-muted/30"
-        >
-          <p className="text-sm text-muted-foreground">
-            💡 <strong>API Integration:</strong> Replace mock data with GitHub API. 
-            Use <code className="px-1.5 py-0.5 rounded bg-muted text-xs">fetch('https://api.github.com/users/YOUR_USERNAME/repos')</code> 
-            {" "}to fetch real repository data. No authentication required for public repos.
-          </p>
-        </motion.div>
       </section>
     </div>
   );

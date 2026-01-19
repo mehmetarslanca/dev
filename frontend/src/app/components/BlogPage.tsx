@@ -60,11 +60,10 @@ export function BlogPage() {
           className="max-w-3xl mb-16"
         >
           <h1 className="text-3xl md:text-5xl tracking-tight mb-4">
-            Writing & Thoughts
+            Kernel Panic & Solutions
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground">
-            Sharing insights, lessons learned, and perspectives on software development.
-            Join me on my journey of continuous learning.
+            Documenting the engineering process. Technical deep-dives, architectural decisions, and the continuous pursuit of clean code.
           </p>
         </motion.div>
 
@@ -125,20 +124,6 @@ export function BlogPage() {
           ))}
         </div>
         )}
-
-        {/* Integration Note */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-12 p-6 rounded-lg border border-border bg-muted/30 max-w-4xl"
-        >
-          <p className="text-sm text-muted-foreground">
-            💡 <strong>Content Management:</strong> Blog posts are currently hardcoded. 
-            Consider integrating with a headless CMS (Sanity, Contentful, Strapi) or use 
-            Markdown files with a static site generator for easy content management.
-          </p>
-        </motion.div>
       </section>
     </div>
   );

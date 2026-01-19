@@ -138,22 +138,6 @@ export function WakaTimeModal({ isOpen, onClose }: WakaTimeModalProps) {
             ))}
           </div>
         </div>
-
-        {/* API Integration Note */}
-        <div className="mt-6 p-4 rounded-lg border border-border bg-muted/30">
-          <p className="text-xs text-muted-foreground">
-            💡 <strong>Integration Note:</strong> Replace mock data with WakaTime API calls.
-            Get your API key from{" "}
-            <a
-              href="https://wakatime.com/settings/api-key"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline hover:text-foreground"
-            >
-              wakatime.com/settings/api-key
-            </a>
-          </p>
-        </div>
       </DialogContent>
     </Dialog>
   );

@@ -92,25 +92,31 @@ export function QuizModal({ onNavigate }: QuizModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={(val) => !val && handleSkip()}>
-       <DialogContent className="sm:max-w-xl border-primary/20 bg-black/95 backdrop-blur-xl shadow-2xl shadow-primary/10">
-           <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-primary font-mono tracking-tighter">
-                   <Terminal className="w-5 h-5" /> SYSTEM_DIAGNOSTIC_REQUIRED
+       <DialogContent className="sm:max-w-xl p-0 gap-0 border-zinc-800 bg-[#0a0a0a] shadow-2xl shadow-black/50 overflow-hidden">
+           <DialogHeader className="p-6 pb-2 border-b border-zinc-900 bg-[#0a0a0a]">
+                <DialogTitle className="flex items-center gap-2 text-primary/90 font-mono tracking-tighter text-base">
+                   <Terminal className="w-4 h-4" /> SYSTEM_DIAGNOSTIC_REQUIRED
                 </DialogTitle>
-                <DialogDescription className="font-mono text-xs text-muted-foreground pt-2">
-                   Incident Report: {scenario.title}
+                <DialogDescription className="font-mono text-xs text-zinc-500 pt-1">
+                   Incident Report: <span className="text-zinc-300">{scenario.title}</span>
                 </DialogDescription>
            </DialogHeader>
 
-           <div className="py-4">
-               <div className="bg-muted/10 p-3 rounded border border-border/50 mb-4 font-mono text-sm leading-relaxed text-muted-foreground">
+           <div className="p-6 space-y-6">
+               <div className="bg-black p-5 rounded-lg border border-zinc-800 font-mono text-sm leading-relaxed text-zinc-100 shadow-sm relative overflow-hidden">
+                  {/* Decorative status bar */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/50 via-primary/20 to-transparent opacity-50" />
+                  
                   {/* System State Header */}
-                  <div className="flex gap-4 text-xs mb-3 text-primary/70 border-b border-border/30 pb-2">
-                      <span>CPU: {scenario.systemState.cpuLoad}%</span>
-                      <span>LATENCY: {scenario.systemState.latency}ms</span>
-                      <span>MEM: {scenario.systemState.memoryUsage}MB</span>
+                  <div className="flex gap-4 text-[10px] uppercase tracking-wider mb-4 text-zinc-500 font-semibold select-none">
+                      <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-red-500/80 animate-pulse" /> CPU: {scenario.systemState.cpuLoad}%</span>
+                      <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-yellow-500/80" /> LATENCY: {scenario.systemState.latency}ms</span>
+                      <span className="flex items-center gap-1.5"><div className="w-1.5 h-1.5 rounded-full bg-blue-500/80" /> MEM: {scenario.systemState.memoryUsage}MB</span>
                   </div>
-                  {scenario.description}
+                  
+                  <p className="text-white/90 font-medium">
+                    {scenario.description}
+                  </p>
                </div>
 
                <div className="grid gap-3">
@@ -119,31 +125,42 @@ export function QuizModal({ onNavigate }: QuizModalProps) {
                            key={opt.id}
                            disabled={verifying}
                            variant={"outline"}
-                           className={`justify-start h-auto py-3 px-4 font-mono text-sm border-border/50 hover:bg-primary/10 hover:text-primary transition-all text-left whitespace-normal
-                               ${selectedOptionId === opt.id ? "bg-primary/20 border-primary text-primary" : ""}
+                           className={`justify-start h-auto py-4 px-5 font-mono text-sm border transition-all text-left whitespace-normal relative overflow-hidden
+                               ${selectedOptionId === opt.id 
+                                ? "bg-primary/10 border-primary text-primary hover:bg-primary/20 hover:text-primary active:scale-[0.99] shadow-[0_0_15px_rgba(220,38,38,0.15)]" 
+                                : "bg-[#111] border-zinc-800 text-zinc-100 hover:bg-[#161616] hover:border-zinc-700 hover:text-white"
+                               }
                            `}
                            onClick={() => handleOptionSelect(opt.id)}
                        >
-                           <span className="mr-3 opacity-50 shrink-0">OPT_0{i+1}</span>
-                           <div className="flex flex-col items-start gap-1">
-                               <span className="font-semibold">{opt.title}</span>
-                               <span className="text-[10px] text-muted-foreground font-sans opacity-80">{opt.description}</span>
+                           <span className={`mr-4 text-xs font-bold shrink-0 mt-0.5 ${selectedOptionId === opt.id ? "text-primary" : "text-zinc-600 group-hover:text-zinc-500"}`}>
+                             0{i+1}
+                           </span>
+                           <div className="flex flex-col items-start gap-1.5 w-full">
+                               <span className="font-bold tracking-tight text-[13px]">{opt.title}</span>
+                               <span className={`text-[11px] leading-relaxed ${selectedOptionId === opt.id ? "text-primary/80" : "text-zinc-500"}`}>
+                                 {opt.description}
+                               </span>
                            </div>
-                           {selectedOptionId === opt.id && verifying && <Loader2 className="ml-auto w-4 h-4 animate-spin" />}
+                           {selectedOptionId === opt.id && verifying && (
+                             <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                               <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                             </div>
+                           )}
                        </Button>
                    ))}
                </div>
            </div>
 
-           <DialogFooter className="sm:justify-between items-center sm:gap-0 gap-2">
-                <div className="flex items-center text-[10px] text-muted-foreground gap-1">
-                    <ShieldAlert className="w-3 h-3" /> Root Access Required
+           <DialogFooter className="p-4 border-t border-zinc-900 bg-[#0c0c0c] flex flex-row items-center justify-between sm:justify-between sm:gap-0">
+                <div className="flex items-center text-[10px] text-zinc-600 gap-1.5 font-mono uppercase tracking-wider">
+                    <ShieldAlert className="w-3 h-3 text-red-900/80" /> Root Access Required
                 </div>
                 <Button 
                     variant="ghost" 
                     onClick={handleSkip}
                     disabled={verifying}
-                    className="text-muted-foreground hover:text-foreground text-xs"
+                    className="h-8 text-[10px] text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900 font-mono tracking-wider uppercase"
                 >
                     System Override (Skip) →
                 </Button>

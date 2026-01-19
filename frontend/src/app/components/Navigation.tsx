@@ -35,8 +35,8 @@ export function Navigation({ currentPage, onNavigate }: NavigationProps) {
               onClick={() => onNavigate("home")}
               className="text-xl tracking-tight text-foreground hover:text-primary transition-colors flex-shrink-0 text-left"
             >
-              <span className="font-medium">dev</span>
-              <span className="text-muted-foreground">.portfolio</span>
+              <span className="font-medium">arslanca</span>
+              <span className="text-primary">.dev</span>
             </motion.button>
 
             {/* WakaTime Live Status - positioned below on mobile, next to it on desktop */}

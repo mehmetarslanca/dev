@@ -40,6 +40,8 @@ quizdeki cevaba özel yönlendirme var bakarsınız xd
 
 var işte baya bi şey amk
 
+wakatime bug'ı çözüldü
+
 ---
 
 ## TODO

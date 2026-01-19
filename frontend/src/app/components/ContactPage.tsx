@@ -145,17 +145,17 @@ export function ContactPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4"
+            className="grid grid-cols-2 md:grid-cols-3 gap-4"
           >
             <a
-              href="mailto:your@email.com"
+              href="mailto:mehmetarslancamehmet@gmail.com"
               className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border bg-card hover:border-primary/30 hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-all group"
             >
               <Mail className="w-6 h-6 group-hover:scale-110 group-hover:text-primary transition-all" />
               <span className="text-sm text-muted-foreground">Email</span>
             </a>
             <a
-              href="https://github.com"
+              href="https://github.com/postaldudegoespostal"
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border bg-card hover:border-primary/30 hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-all group"
@@ -164,7 +164,7 @@ export function ContactPage() {
               <span className="text-sm text-muted-foreground">GitHub</span>
             </a>
             <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/mehmet-arslanca-5618b32a6/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border bg-card hover:border-primary/30 hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-all group"
@@ -172,30 +172,8 @@ export function ContactPage() {
               <Linkedin className="w-6 h-6 group-hover:scale-110 group-hover:text-primary transition-all" />
               <span className="text-sm text-muted-foreground">LinkedIn</span>
             </a>
-            <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border bg-card hover:border-primary/30 hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-all group"
-            >
-              <Twitter className="w-6 h-6 group-hover:scale-110 group-hover:text-primary transition-all" />
-              <span className="text-sm text-muted-foreground">Twitter</span>
-            </a>
           </motion.div>
 
-          {/* Integration Note */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="mt-12 p-6 rounded-lg border border-border bg-muted/30"
-          >
-            <p className="text-sm text-muted-foreground">
-              💡 <strong>Form Submission:</strong> Currently logs to console. 
-              To enable real submissions, integrate with a backend service (Supabase, Firebase), 
-              email service (SendGrid, Resend), or form handling service (Formspree, Netlify Forms).
-            </p>
-          </motion.div>
         </motion.div>
       </section>
     </div>

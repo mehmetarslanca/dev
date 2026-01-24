@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -27,6 +28,7 @@ public class BlogManager implements BlogService {
         BlogPost blogPost = new BlogPost();
         blogPost.setTitle(request.getTitle());
         blogPost.setContent(request.getContent());
+        blogPost.setCreatedDate(LocalDate.now());
         blogRepository.save(blogPost);
     }
 

@@ -1,6 +1,13 @@
 import { motion, AnimatePresence } from "motion/react";
-import { Calendar, Clock, ArrowRight, ArrowLeft, Loader2 } from "lucide-react";
+import { Calendar, ArrowRight, ArrowLeft, Loader2, ListFilter } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
 import { api, BlogPost as ApiBlogPost } from "@/app/api";
 import { useEffect, useState } from "react";
 import { useUser } from "@/app/context/UserContext";
@@ -16,6 +23,7 @@ export function BlogPage() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
   const { role, welcomeShown, setWelcomeShown } = useUser();
 
   useEffect(() => {
@@ -52,23 +60,51 @@ export function BlogPage() {
     fetchPosts();
   }, []);
 
+  const sortedPosts = [...posts].sort((a, b) => {
+    const dateA = new Date(a.createdDate).getTime();
+    const dateB = new Date(b.createdDate).getTime();
+    return sortOrder === "newest" ? dateB - dateA : dateA - dateB;
+  });
+
   return (
     <div className="min-h-screen pt-20">
       <section className="container mx-auto px-6 py-24">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-3xl mb-16"
-        >
-          <h1 className="text-3xl md:text-5xl tracking-tight mb-4">
-            Kernel Panic & Solutions
-          </h1>
-          <p className="text-lg md:text-xl text-muted-foreground">
-            Documenting the engineering process. Technical deep-dives, architectural
-            decisions, and the continuous pursuit of clean code.
-          </p>
-        </motion.div>
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-3xl"
+          >
+            <h1 className="text-3xl md:text-5xl tracking-tight mb-4">
+              Kernel Panic & Solutions
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground">
+              Documenting the engineering process. Technical deep-dives, architectural
+              decisions, and the continuous pursuit of clean code.
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-3"
+          >
+            <ListFilter className="w-4 h-4 text-muted-foreground" />
+            <Select
+              value={sortOrder}
+              onValueChange={(value: "newest" | "oldest") => setSortOrder(value)}
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Sort by date" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Date - Newest</SelectItem>
+                <SelectItem value="oldest">Date - Oldest</SelectItem>
+              </SelectContent>
+            </Select>
+          </motion.div>
+        </div>
 
         {loading ? (
           <div className="flex justify-center p-12">
@@ -77,7 +113,7 @@ export function BlogPage() {
         ) : (
           /* Blog Posts List */
           <div className="max-w-4xl">
-            {posts.map((post, index) => (
+            {sortedPosts.map((post, index) => (
               <motion.article
                 key={post.id}
                 initial={{ opacity: 0, y: 20 }}

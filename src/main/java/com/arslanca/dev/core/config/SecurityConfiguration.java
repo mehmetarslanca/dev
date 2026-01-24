@@ -55,7 +55,6 @@ public class SecurityConfiguration {
 
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder encoder) {
-        // Log for debugging (keep this for now)
         System.out.println("Configured Admin User: '" + adminUsername + "'");
         
         UserDetails admin = User.builder()

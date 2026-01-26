@@ -3,6 +3,7 @@ package com.arslanca.dev.api.controllers;
 import com.arslanca.dev.business.abstracts.BlogService;
 import com.arslanca.dev.business.dto.requests.CreateBlogRequest;
 import com.arslanca.dev.business.dto.responses.GetBlogResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class BlogController {
     }
 
     @PostMapping
-    public void add(@RequestBody CreateBlogRequest request){
+    public void add(@Valid @RequestBody CreateBlogRequest request){
         blogService.add(request);
     }
 
@@ -29,8 +30,7 @@ public class BlogController {
         blogService.delete(id);
     }
     @PutMapping("/{id}")
-    public void update(@PathVariable int id, @RequestBody CreateBlogRequest request) {
+    public void update(@PathVariable int id, @Valid @RequestBody CreateBlogRequest request) {
         blogService.update(id, request);
     }
-
 }

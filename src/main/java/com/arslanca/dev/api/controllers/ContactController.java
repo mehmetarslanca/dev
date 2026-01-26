@@ -5,6 +5,7 @@ import com.arslanca.dev.business.dto.requests.SendMailRequest;
 import com.arslanca.dev.core.utilities.ratelimit.RateLimitService;
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,8 @@ public class ContactController {
     private final RateLimitService rateLimitService;
 
     @PostMapping
-    public ResponseEntity<String> sendMessage(@RequestBody SendMailRequest request, HttpServletRequest httpRequest) {
+
+    public ResponseEntity<String> sendMessage(@Valid @RequestBody SendMailRequest request, HttpServletRequest httpRequest) {
         String ipAddress = httpRequest.getRemoteAddr();
         Bucket bucket = rateLimitService.resolveBucket(ipAddress);
 

@@ -6,6 +6,7 @@ import { BarChart3, Github, Linkedin, Mail, ExternalLink } from "lucide-react";
 import { useUser } from "@/app/context/UserContext";
 import { toast } from "sonner";
 import { api } from "@/app/api";
+import { ArchitectureTree } from "@/app/components/ArchitectureTree";
 
 function PhilosophyCard({ title, text, image, index }: { title: string; text: string; image: string; index: number }) {
   const ref = useRef(null);
@@ -66,6 +67,16 @@ export function HomePage() {
              position: 'top-center'
           });
           setWelcomeShown(true);
+      } else if (role === 'master' && !welcomeShown) {
+          toast.success("Access Granted. System Internals Unlocked.", {
+              duration: 5000,
+              className: "bg-green-500/10 border-green-500 text-green-500 font-mono"
+            });
+            setWelcomeShown(true);
+            const element = document.getElementById("architecture-section");
+            if (element) {
+                setTimeout(() => element.scrollIntoView({ behavior: "smooth" }), 1000);
+            }
       }
   }, [role, welcomeShown, setWelcomeShown]);
 
@@ -212,6 +223,17 @@ export function HomePage() {
           />
         </div>
       </motion.section>
+
+      {/* Internal Architecture Section - Only for Master */}
+      {role === 'master' && (
+        <section id="architecture-section" className="container mx-auto px-6 py-20 mb-20 border-t border-border/10 bg-primary/5 rounded-xl border-dashed border-2 border-primary/20">
+             <div className="mb-8 text-center">
+                 <h2 className="text-3xl font-mono text-primary mb-2">ACCESS GRANTED: SYSTEM INTERNALS</h2>
+                 <p className="text-muted-foreground">You have proven yourself. Here is the live logical execution tree of this very system.</p>
+             </div>
+             <ArchitectureTree />
+        </section>
+      )}
 
       {/* Quote Section */}
       <section className="container mx-auto px-6 py-32 border-t border-border/10">

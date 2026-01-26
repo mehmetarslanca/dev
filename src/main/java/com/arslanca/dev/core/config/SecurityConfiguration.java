@@ -27,11 +27,10 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        // Start by allowing dispatcher types like FORWARD and ERROR
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
 
-                        // 1. Secure specific Admin/Write endpoints
                         .requestMatchers("/api/admin/**").authenticated()
+                        .requestMatchers("/api/pinned-projects/admin/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/blogs").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/blogs/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/blogs/**").authenticated()

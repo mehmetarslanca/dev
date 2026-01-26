@@ -5,7 +5,7 @@ import { Badge } from "@/app/components/ui/badge";
 import { Github, ExternalLink, Star, GitFork, Loader2 } from "lucide-react";
 import { api, GithubRepoResponse } from "@/app/api";
 import { useUser } from "@/app/context/UserContext";
-import { ArchitectureTree } from "@/app/components/ArchitectureTree";
+import { OnGoingProjects } from "@/app/components/OnGoingProjects";
 import { toast } from "sonner";
 
 // Use the API interface, or extend it locally for UI needs
@@ -20,16 +20,6 @@ export function PortfolioPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const { role, welcomeShown, setWelcomeShown } = useUser();
-
-  useEffect(() => {
-    if (role === 'master' && !welcomeShown) {
-      toast.success("Access Granted. System Internals Unlocked.", {
-        duration: 5000,
-        className: "bg-green-500/10 border-green-500 text-green-500 font-mono"
-      });
-      setWelcomeShown(true);
-    }
-  }, [role, welcomeShown, setWelcomeShown]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -75,11 +65,21 @@ export function PortfolioPage() {
           </p>
         </motion.div>
 
-        {role === 'master' && (
-          <div className="mb-20">
-            <ArchitectureTree />
-          </div>
-        )}
+        <OnGoingProjects />
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="max-w-3xl mb-12 mt-32"
+        >
+          <h2 className="text-2xl md:text-3xl tracking-tight mb-4 font-mono border-l-4 border-muted pl-4">
+             GitHub Projects
+          </h2>
+          <p className="text-muted-foreground pl-5">
+             Public repositories and open-source contributions fetched directly from GitHub.
+          </p>
+        </motion.div>
 
         {/* Projects Grid */}
         {loading ? (

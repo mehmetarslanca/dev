@@ -3,8 +3,15 @@ import { motion, AnimatePresence } from "motion/react";
 import { Button } from "@/app/components/ui/button";
 import { Input } from "@/app/components/ui/input";
 import { Textarea } from "@/app/components/ui/textarea";
-import { api, BlogPost } from "@/app/api";
-import { Trash2, Plus, LogOut, FileText, ChevronLeft, Edit } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/app/components/ui/select";
+import { api, BlogPost, PinnedProject, GithubRepoResponse } from "@/app/api"; // Added PinnedProject
+import { Trash2, Plus, LogOut, FileText, ChevronLeft, Edit, Layers } from "lucide-react"; // Added Layers
 
 export function AdminBlogPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -12,11 +19,24 @@ export function AdminBlogPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
+  const [activeTab, setActiveTab] = useState<"blog" | "projects">("blog"); // Added tab state
+
+  // Blog State
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
+
+  // Projects State
+  const [projects, setProjects] = useState<PinnedProject[]>([]);
+  const [projectTitle, setProjectTitle] = useState("");
+  const [projectDesc, setProjectDesc] = useState("");
+  const [projectTags, setProjectTags] = useState("");
+  const [projectGithub, setProjectGithub] = useState("");
+  const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
+  const [isAddingProject, setIsAddingProject] = useState(false);
+  const [githubRepos, setGithubRepos] = useState<GithubRepoResponse[]>([]);
 
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -27,6 +47,35 @@ export function AdminBlogPage() {
       setBlogs(data);
     } catch (error) {
       console.error("Failed to fetch blogs", error);
+    }
+  };
+
+  const fetchProjects = async () => {
+      try {
+          const data = await api.pinnedProjects.getAll();
+          setProjects(data);
+      } catch (error) {
+          console.error("Failed to fetch pinned projects", error);
+      }
+  }
+
+  // Refetch when tab changes or login status changes
+  useEffect(() => {
+    if (isLoggedIn) {
+        if (activeTab === "blog") fetchBlogs();
+        if (activeTab === "projects") {
+            fetchProjects();
+            fetchGithubRepos();
+        }
+    }
+  }, [activeTab, isLoggedIn]);
+
+  const fetchGithubRepos = async () => {
+    try {
+      const data = await api.projects.getAll();
+      setGithubRepos(data);
+    } catch (error) {
+      console.error("Failed to fetch github repos", error);
     }
   };
 
@@ -41,7 +90,7 @@ export function AdminBlogPage() {
       await api.admin.verify(header);
       setAuthHeader(header);
       setIsLoggedIn(true);
-      fetchBlogs();
+      // Fetches are now handled by useEffect based on activeTab
       setStatus("idle");
     } catch (error: any) {
       console.error(error);
@@ -83,12 +132,55 @@ export function AdminBlogPage() {
     }
   };
 
+  const handleCreateProject = async (e: React.FormEvent) => {
+      e.preventDefault();
+      setStatus("loading");
+      const tagsArray = projectTags.split(',').map(t => t.trim()).filter(t => t !== "");
+      try {
+          if (editingProjectId) {
+              await api.pinnedProjects.update(editingProjectId, {
+                  title: projectTitle,
+                  description: projectDesc,
+                  tags: tagsArray,
+                  githubUrl: projectGithub || undefined
+              }, authHeader);
+          } else {
+              await api.pinnedProjects.add({
+                  title: projectTitle,
+                  description: projectDesc,
+                  tags: tagsArray,
+                  githubUrl: projectGithub || undefined
+              }, authHeader);
+          }
+          setStatus("success");
+          setProjectTitle("");
+          setProjectDesc("");
+          setProjectTags("");
+          setProjectGithub("");
+          setEditingProjectId(null);
+          setIsAddingProject(false);
+          fetchProjects();
+      } catch (error: any) {
+          setStatus("error");
+          setErrorMessage("Failed to save project");
+      }
+  }
+
   const handleEditClick = (blog: BlogPost) => {
     setTitle(blog.title);
     setContent(blog.content);
     setEditingId(blog.id);
     setIsAddingNew(true);
   };
+
+  const handleEditProjectClick = (project: PinnedProject) => {
+      setProjectTitle(project.title);
+      setProjectDesc(project.description);
+      setProjectTags(project.tags.join(', '));
+      setProjectGithub(project.githubUrl || "");
+      setEditingProjectId(project.id);
+      setIsAddingProject(true);
+  }
 
   const handleDeletePost = async (id: number) => {
     if (!confirm("Are you sure you want to delete this post?")) return;
@@ -101,9 +193,19 @@ export function AdminBlogPage() {
     }
   };
 
+  const handleDeleteProject = async (id: number) => {
+      if (!confirm("Delete project?")) return;
+      try {
+          await api.pinnedProjects.delete(id, authHeader);
+          fetchProjects();
+      } catch (error) {
+          alert("Failed to delete project");
+      }
+  }
+
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen pt-20 flex items-center justify-center">
+      <div className="min-h-screen py-32 flex items-center justify-center container mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -139,126 +241,229 @@ export function AdminBlogPage() {
   }
 
   return (
-    <div className="min-h-screen pt-20">
-      <section className="container mx-auto px-6 py-12">
-        <div className="flex justify-between items-center mb-12">
-          <div>
-            <h1 className="text-3xl font-bold flex items-center gap-2">
-              <FileText className="w-8 h-8 text-primary" />
-              Blog Dashboard
-            </h1>
-            <p className="text-muted-foreground">Manage your blog content</p>
-          </div>
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsAddingNew(!isAddingNew);
-                if (isAddingNew) {
-                  setEditingId(null);
-                  setTitle("");
-                  setContent("");
-                }
-              }}
-              className="gap-2"
-            >
-              {isAddingNew ? <ChevronLeft className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-              {isAddingNew ? "Back to List" : "New Post"}
-            </Button>
-            <Button variant="ghost" onClick={handleLogout} className="gap-2 text-red-500 hover:text-red-600 hover:bg-red-500/10">
-              <LogOut className="w-4 h-4" />
-              Logout
-            </Button>
-          </div>
-        </div>
+    <div className="min-h-screen pt-32 pb-20 container mx-auto px-6 max-w-4xl">
+      <div className="flex items-center justify-between mb-12">
+        <h1 className="text-3xl font-light tracking-tight">System Admin</h1>
+        <Button variant="ghost" onClick={handleLogout} className="text-muted-foreground hover:text-red-500">
+          <LogOut className="w-4 h-4 mr-2" /> Logout
+        </Button>
+      </div>
 
-        <AnimatePresence mode="wait">
-          {isAddingNew ? (
-            <motion.div
-              key="form"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="max-w-2xl mx-auto"
-            >
-              <form onSubmit={handleCreatePost} className="space-y-6 p-8 border border-border rounded-xl bg-card/50">
-                <h2 className="text-xl font-semibold">{editingId ? "Edit Post" : "Create New Post"}</h2>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Title</label>
-                  <Input
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Enter title..."
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Content</label>
-                  <Textarea
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    placeholder="Write content..."
-                    required
-                    rows={12}
-                  />
-                </div>
-                {status === "error" && (
-                  <div className="p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded text-sm">
-                    {errorMessage}
-                  </div>
+      <div className="flex gap-4 mb-8 border-b border-border/40 pb-1">
+          <Button
+            variant={activeTab === "blog" ? "secondary" : "ghost"}
+            onClick={() => setActiveTab("blog")}
+            className="rounded-b-none"
+          >
+              <FileText className="w-4 h-4 mr-2" />
+              Blog Posts
+          </Button>
+           <Button
+            variant={activeTab === "projects" ? "secondary" : "ghost"}
+            onClick={() => setActiveTab("projects")}
+             className="rounded-b-none"
+          >
+              <Layers className="w-4 h-4 mr-2" />
+              Pinned Projects
+          </Button>
+      </div>
+
+      {activeTab === "blog" ? (
+        <>
+            {/* Creates/Edit Form */}
+            <AnimatePresence mode="wait">
+                {isAddingNew ? (
+                <motion.form
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    onSubmit={handleCreatePost}
+                    className="space-y-6 mb-12 bg-card border border-border p-6 rounded-lg"
+                >
+                    <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-medium">{editingId ? "Edit Post" : "New Post"}</h2>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => { setIsAddingNew(false); setEditingId(null); setTitle(""); setContent(""); }}>
+                        <ChevronLeft className="w-4 h-4 mr-1" /> Cancel
+                    </Button>
+                    </div>
+                    {/* ... (rest of blog form) ... */}
+                    <Input
+                        placeholder="Post Title"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        required
+                        className="text-lg font-medium"
+                    />
+                    <Textarea
+                        placeholder="Write your thoughts..."
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        required
+                        className="min-h-[300px] font-mono text-sm leading-relaxed"
+                    />
+                    <div className="flex justify-end pt-4">
+                    <Button type="submit" disabled={status === "loading"}>
+                        {status === "loading" ? "Saving..." : (editingId ? "Update Post" : "Publish Post")}
+                    </Button>
+                    </div>
+                </motion.form>
+                ) : (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mb-8"
+                >
+                    <Button onClick={() => setIsAddingNew(true)} className="w-full h-16 border-dashed border-2 border-border bg-transparent hover:bg-muted/10 text-muted-foreground gap-2">
+                    <Plus className="w-5 h-5" /> Write New Post
+                    </Button>
+                </motion.div>
                 )}
-                <Button type="submit" className="w-full" disabled={status === "loading"}>
-                  {status === "loading" ? "Saving..." : editingId ? "Update Post" : "Publish Post"}
-                </Button>
-              </form>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="list"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid gap-4"
-            >
-              {blogs.length === 0 ? (
-                <div className="text-center py-20 border border-dashed border-border rounded-xl">
-                  <p className="text-muted-foreground">No blog posts found.</p>
-                </div>
-              ) : (
-                blogs.map((blog) => (
-                  <div
+            </AnimatePresence>
+
+            {/* List */}
+            <div className="space-y-4">
+                {blogs.map((blog) => (
+                <motion.div
                     key={blog.id}
-                    className="p-6 border border-border rounded-xl bg-card/30 hover:bg-card/50 transition-colors flex justify-between items-center group"
-                  >
+                    layoutId={`blog-${blog.id}`}
+                    className="p-6 rounded-lg border border-border bg-card/50 flex items-center justify-between group"
+                >
                     <div>
-                      <h3 className="font-semibold text-lg">{blog.title}</h3>
-                      <p className="text-sm text-muted-foreground">{new Date(blog.createdDate).toLocaleDateString()}</p>
+                    <h3 className="text-lg font-medium mb-1">{blog.title}</h3>
+                    <p className="text-sm text-muted-foreground font-mono">{blog.createdDate}</p>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleEditClick(blog)}
-                        className="text-muted-foreground hover:text-primary hover:bg-primary/10"
-                      >
-                        <Edit className="w-5 h-5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeletePost(blog.id)}
-                        className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10"
-                      >
-                        <Trash2 className="w-5 h-5" />
-                      </Button>
+                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button size="icon" variant="ghost" onClick={() => handleEditClick(blog)}>
+                        <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button size="icon" variant="ghost" className="text-red-500 hover:text-red-600 hover:bg-red-500/10" onClick={() => handleDeletePost(blog.id)}>
+                        <Trash2 className="w-4 h-4" />
+                    </Button>
                     </div>
-                  </div>
-                ))
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </section>
+                </motion.div>
+                ))}
+            </div>
+        </>
+      ) : (
+        <>
+        {/* PROJECTS TAB CONTENT */}
+         <AnimatePresence mode="wait">
+            {isAddingProject ? (
+                <motion.form
+                   initial={{ opacity: 0, y: 10 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   exit={{ opacity: 0, y: -10 }}
+                   onSubmit={handleCreateProject}
+                   className="space-y-6 mb-12 bg-card border border-border p-6 rounded-lg"
+                >
+                    <div className="flex items-center justify-between mb-4">
+                         <h2 className="text-xl font-medium">{editingProjectId ? "Edit Project" : "Pin Project"}</h2>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => { setIsAddingProject(false); setEditingProjectId(null); setProjectTitle(""); setProjectDesc(""); }}>
+                           <ChevronLeft className="w-4 h-4 mr-1" /> Cancel
+                        </Button>
+                    </div>
+
+                    <Input
+                       placeholder="Project Title"
+                       value={projectTitle}
+                       onChange={(e) => setProjectTitle(e.target.value)}
+                       required
+                    />
+                    <Textarea
+                       placeholder="Short description..."
+                       value={projectDesc}
+                       onChange={(e) => setProjectDesc(e.target.value)}
+                       required
+                    />
+                    <Input
+                       placeholder="Tags (comma separated) e.g. Java, Spring Boot"
+                       value={projectTags}
+                       onChange={(e) => setProjectTags(e.target.value)}
+                    />
+
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-muted-foreground">GitHub Repository</label>
+                      <Select
+                        value={projectGithub}
+                        onValueChange={(val) => {
+                           setProjectGithub(val);
+                           // Optional: Auto-fill title/desc if empty when selecting a repo
+                           const repo = githubRepos.find(r => r.html_url === val);
+                           if (repo && !projectTitle) setProjectTitle(repo.name);
+                           if (repo && !projectDesc) setProjectDesc(repo.description || "");
+                        }}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a repository..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                           <SelectItem value="manual-entry">Manual Entry (Use Input below)</SelectItem>
+                           {githubRepos.map(repo => (
+                             <SelectItem key={repo.html_url} value={repo.html_url}>
+                               {repo.name} ({repo.language})
+                             </SelectItem>
+                           ))}
+                        </SelectContent>
+                      </Select>
+
+                      {/* Fallback manual input or just info that it's selected */}
+                      <Input
+                        placeholder="Or enter GitHub URL manually"
+                        value={projectGithub}
+                        onChange={(e) => setProjectGithub(e.target.value)}
+                        className="mt-2 text-sm"
+                      />
+                    </div>
+
+                    <div className="flex justify-end pt-4">
+                        <Button type="submit" disabled={status === "loading"}>
+                            {status === "loading" ? "Saving..." : (editingProjectId ? "Update Project" : "Pin Project")}
+                        </Button>
+                    </div>
+                </motion.form>
+            ) : (
+                 <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mb-8"
+                >
+                    <Button onClick={() => setIsAddingProject(true)} className="w-full h-16 border-dashed border-2 border-border bg-transparent hover:bg-muted/10 text-muted-foreground gap-2">
+                    <Plus className="w-5 h-5" /> Pin New Project
+                    </Button>
+                </motion.div>
+            )}
+         </AnimatePresence>
+
+          <div className="space-y-4">
+               {projects.map((proj) => (
+                   <motion.div
+                       key={proj.id}
+                       className="p-6 rounded-lg border border-border bg-card/50 flex flex-col gap-2 group relative"
+                   >
+                       <div className="flex justify-between items-start">
+                           <div>
+                               <h3 className="text-lg font-medium">{proj.title}</h3>
+                               <p className="text-sm text-muted-foreground line-clamp-2">{proj.description}</p>
+                           </div>
+                           <div className="flex items-center gap-2">
+                                <Button size="icon" variant="ghost" onClick={() => handleEditProjectClick(proj)}>
+                                   <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button size="icon" variant="ghost" className="text-red-500 hover:text-red-900" onClick={() => handleDeleteProject(proj.id)}>
+                                    <Trash2 className="w-4 h-4" />
+                                </Button>
+                           </div>
+                       </div>
+                       <div className="flex gap-2 text-xs text-muted-foreground">
+                           {proj.tags.map(t => <span key={t} className="bg-muted px-1 rounded">{t}</span>)}
+                       </div>
+                   </motion.div>
+               ))}
+          </div>
+
+        </>
+      )}
+
     </div>
   );
 }

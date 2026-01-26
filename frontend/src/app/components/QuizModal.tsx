@@ -65,7 +65,7 @@ export function QuizModal({ onNavigate }: QuizModalProps) {
             setOpen(false);
             if (result.userLevel === "SENIOR") {
                 completeQuiz("master");
-                onNavigate("me");
+                onNavigate("home");
             } else if (result.userLevel === "MID" || result.userLevel === "JUNIOR") {
                 completeQuiz("learner");
                 onNavigate("blog");

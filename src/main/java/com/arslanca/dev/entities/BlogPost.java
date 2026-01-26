@@ -29,6 +29,6 @@ public class BlogPost {
     private LocalDate createdDate = LocalDate.now();
 
     @Column(name = "is_draft")
-    private boolean isDraft; //gelecekte eklicem
+    private Boolean isDraft; //gelecekte eklicem
 
 }

@@ -64,12 +64,36 @@ export interface VerificationResultResponse {
   redirectPath: string;
 }
 
+export interface PinnedProject {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  githubUrl?: string;
+}
+
+export interface CreatePinnedProjectRequest {
+  title: string;
+  description: string;
+  tags: string[];
+  githubUrl?: string;
+}
+
 export const api = {
   contact: {
     sendMessage: (data: SendMailRequest) => client.post('/contact', data),
   },
   projects: {
     getAll: () => client.get<GithubRepoResponse[]>('/projects').then((res) => res.data),
+  },
+    pinnedProjects: {
+    getAll: () => client.get<PinnedProject[]>('/pinned-projects').then((res) => res.data),
+    add: (data: CreatePinnedProjectRequest, authHeader: string) =>
+      client.post('/pinned-projects/admin/add', data, { headers: { 'Authorization': authHeader } }),
+    update: (id: number, data: CreatePinnedProjectRequest, authHeader: string) =>
+      client.put(`/pinned-projects/admin/update/${id}`, data, { headers: { 'Authorization': authHeader } }),
+    delete: (id: number, authHeader: string) =>
+      client.delete(`/pinned-projects/admin/delete/${id}`, { headers: { 'Authorization': authHeader } }),
   },
   stats: {
     getCurrent: () => client.get<StatsResponse>('/stats/current').then((res) => res.data),

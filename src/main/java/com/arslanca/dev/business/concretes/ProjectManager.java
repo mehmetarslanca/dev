@@ -2,7 +2,7 @@ package com.arslanca.dev.business.concretes;
 
 import com.arslanca.dev.adapters.GithubAdapter;
 import com.arslanca.dev.business.abstracts.ProjectService;
-import com.arslanca.dev.business.responses.GithubRepoResponse;
+import com.arslanca.dev.business.dto.responses.GithubRepoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

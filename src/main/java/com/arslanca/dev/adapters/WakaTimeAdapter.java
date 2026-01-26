@@ -2,7 +2,7 @@ package com.arslanca.dev.adapters;
 
 import com.arslanca.dev.adapters.models.WakaTimeResponse;
 import com.arslanca.dev.adapters.models.WakaTimeSummariesResponse;
-import com.arslanca.dev.business.responses.StatsResponse;
+import com.arslanca.dev.business.dto.responses.StatsResponse;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

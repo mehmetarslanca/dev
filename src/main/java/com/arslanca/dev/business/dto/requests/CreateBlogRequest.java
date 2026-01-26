@@ -1,4 +1,4 @@
-package com.arslanca.dev.business.requests;
+package com.arslanca.dev.business.dto.requests;
 
 import lombok.Data;
 

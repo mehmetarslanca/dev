@@ -28,4 +28,7 @@ public class BlogPost {
     @Column(name = "created_date")
     private LocalDate createdDate = LocalDate.now();
 
+    @Column(name = "is_draft")
+    private boolean isDraft; //gelecekte eklicem
+
 }

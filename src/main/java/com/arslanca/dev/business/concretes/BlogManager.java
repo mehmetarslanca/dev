@@ -2,8 +2,10 @@ package com.arslanca.dev.business.concretes;
 
 
 import com.arslanca.dev.business.abstracts.BlogService;
-import com.arslanca.dev.business.requests.CreateBlogRequest;
-import com.arslanca.dev.dataAccess.abstracts.BlogRepository;
+import com.arslanca.dev.business.dto.requests.CreateBlogRequest;
+import com.arslanca.dev.business.dto.responses.GetBlogResponse;
+import com.arslanca.dev.business.mappers.BlogMapper;
+import com.arslanca.dev.dataAccess.BlogRepository;
 import com.arslanca.dev.entities.BlogPost;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -16,27 +18,29 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BlogManager implements BlogService {
 
-    public final BlogRepository blogRepository;
+    private final BlogRepository blogRepository;
+    private final BlogMapper blogMapper;
 
     @Override
-    public List<BlogPost> getAll() {
-        return blogRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDate")); //tarihe göre sort etcek
+    public List<GetBlogResponse> getAll() {
+        List<BlogPost> posts = blogRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDate"));
+        return posts.stream()
+                .map(blogMapper::toResponse)
+                .toList();
     }
+
 
     @Override
     public void add(CreateBlogRequest request) {
-        BlogPost blogPost = new BlogPost();
-        blogPost.setTitle(request.getTitle());
-        blogPost.setContent(request.getContent());
+        BlogPost blogPost = blogMapper.toBlogPost(request);
         blogPost.setCreatedDate(LocalDate.now());
         blogRepository.save(blogPost);
     }
 
     @Override
     public void update(int id, CreateBlogRequest request) {
-        BlogPost blogPost = blogRepository.findById(id).orElseThrow(); //hata yönetimini nası yapcam bilmiyom tam
-        blogPost.setTitle(request.getTitle());
-        blogPost.setContent(request.getContent());
+        BlogPost blogPost = blogRepository.findById(id).orElseThrow();
+        blogMapper.updateBlogPostFromRequest(request, blogPost);
         blogRepository.save(blogPost);
     }
 

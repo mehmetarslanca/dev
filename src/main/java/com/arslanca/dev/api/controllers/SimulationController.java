@@ -1,9 +1,9 @@
 package com.arslanca.dev.api.controllers;
 
 import com.arslanca.dev.business.abstracts.SimulationService;
-import com.arslanca.dev.business.requests.VerifySimulationRequest;
-import com.arslanca.dev.business.responses.SimulationScenarioResponse;
-import com.arslanca.dev.business.responses.VerificationResultResponse;
+import com.arslanca.dev.business.dto.requests.VerifySimulationRequest;
+import com.arslanca.dev.business.dto.responses.SimulationScenarioResponse;
+import com.arslanca.dev.business.dto.responses.VerificationResultResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

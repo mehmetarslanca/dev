@@ -1,4 +1,4 @@
-package com.arslanca.dev.business.responses;
+package com.arslanca.dev.business.dto.responses;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.arslanca.dev.api.controllers;
 
 import com.arslanca.dev.business.abstracts.ContactService;
-import com.arslanca.dev.business.requests.SendMailRequest;
+import com.arslanca.dev.business.dto.requests.SendMailRequest;
 import com.arslanca.dev.core.utilities.ratelimit.RateLimitService;
 import io.github.bucket4j.Bucket;
 import jakarta.servlet.http.HttpServletRequest;

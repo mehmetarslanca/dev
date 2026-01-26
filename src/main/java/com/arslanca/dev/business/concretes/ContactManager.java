@@ -1,7 +1,7 @@
 package com.arslanca.dev.business.concretes;
 
 import com.arslanca.dev.business.abstracts.ContactService;
-import com.arslanca.dev.business.requests.SendMailRequest;
+import com.arslanca.dev.business.dto.requests.SendMailRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;

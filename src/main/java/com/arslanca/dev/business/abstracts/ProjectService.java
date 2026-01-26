@@ -1,6 +1,6 @@
 package com.arslanca.dev.business.abstracts;
 
-import com.arslanca.dev.business.responses.GithubRepoResponse;
+import com.arslanca.dev.business.dto.responses.GithubRepoResponse;
 
 import java.util.List;
 

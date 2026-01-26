@@ -1,6 +1,6 @@
 package com.arslanca.dev.adapters;
 
-import com.arslanca.dev.business.responses.GithubRepoResponse;
+import com.arslanca.dev.business.dto.responses.GithubRepoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;

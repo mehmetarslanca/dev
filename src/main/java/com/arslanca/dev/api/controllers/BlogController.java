@@ -1,8 +1,8 @@
 package com.arslanca.dev.api.controllers;
 
 import com.arslanca.dev.business.abstracts.BlogService;
-import com.arslanca.dev.business.requests.CreateBlogRequest;
-import com.arslanca.dev.entities.BlogPost;
+import com.arslanca.dev.business.dto.requests.CreateBlogRequest;
+import com.arslanca.dev.business.dto.responses.GetBlogResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,7 +15,7 @@ public class BlogController {
     private final BlogService blogService;
 
     @GetMapping
-    public List<BlogPost> getAll(){
+    public List<GetBlogResponse> getAll(){
         return blogService.getAll();
     }
 

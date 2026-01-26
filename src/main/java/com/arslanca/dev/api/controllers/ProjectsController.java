@@ -1,7 +1,7 @@
 package com.arslanca.dev.api.controllers;
 
 import com.arslanca.dev.business.abstracts.ProjectService;
-import com.arslanca.dev.business.responses.GithubRepoResponse;
+import com.arslanca.dev.business.dto.responses.GithubRepoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

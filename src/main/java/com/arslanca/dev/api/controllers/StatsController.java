@@ -2,7 +2,7 @@ package com.arslanca.dev.api.controllers;
 
 
 import com.arslanca.dev.adapters.WakaTimeAdapter;
-import com.arslanca.dev.business.responses.StatsResponse;
+import com.arslanca.dev.business.dto.responses.StatsResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

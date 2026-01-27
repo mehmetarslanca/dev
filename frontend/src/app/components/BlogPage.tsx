@@ -24,6 +24,8 @@ export function BlogPage() {
   const [loading, setLoading] = useState(true);
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const { role, welcomeShown, setWelcomeShown } = useUser();
 
   useEffect(() => {
@@ -38,10 +40,11 @@ export function BlogPage() {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
       try {
-        const data = await api.blogs.getAll();
+        const data = await api.blogs.getAll(currentPage, 10);
         setPosts(
-          data.map((post) => ({
+          data.content.map((post) => ({
             ...post,
             category: "Technology",
             excerpt: post.content
@@ -50,6 +53,7 @@ export function BlogPage() {
             date: post.createdDate,
           }))
         );
+        setTotalPages(data.totalPages);
       } catch (error) {
         console.error("Failed to fetch blog posts", error);
       } finally {
@@ -58,7 +62,7 @@ export function BlogPage() {
     };
 
     fetchPosts();
-  }, []);
+  }, [currentPage]);
 
   const sortedPosts = [...posts].sort((a, b) => {
     const dateA = new Date(a.createdDate).getTime();
@@ -111,53 +115,86 @@ export function BlogPage() {
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
-          /* Blog Posts List */
-          <div className="max-w-4xl">
-            {sortedPosts.map((post, index) => (
-              <motion.article
-                key={post.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="group py-8 border-b border-border last:border-0 hover:border-primary/20 transition-colors cursor-pointer"
-                onClick={() => setSelectedPost(post)}
-              >
-                {/* Category Badge */}
-                <span className="inline-block px-3 py-1 rounded-full bg-muted text-xs text-muted-foreground mb-3">
-                  {post.category}
-                </span>
-
-                {/* Title */}
-                <h2 className="text-2xl tracking-tight mb-3 group-hover:text-primary transition-colors">
-                  {post.title}
-                </h2>
-
-                {/* Excerpt */}
-                <p className="text-muted-foreground leading-relaxed mb-4">
-                  {post.excerpt}
-                </p>
-
-                {/* Meta Info & Read More */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      <span>{post.date}</span>
-                    </div>
-                  </div>
-
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="gap-1 group-hover:gap-2 group-hover:text-primary transition-all"
+          <>
+            {/* Blog Posts List */}
+            <div className="max-w-4xl">
+              {sortedPosts.length > 0 ? (
+                sortedPosts.map((post, index) => (
+                  <motion.article
+                    key={post.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="group py-8 border-b border-border last:border-0 hover:border-primary/20 transition-colors cursor-pointer"
+                    onClick={() => setSelectedPost(post)}
                   >
-                    Read More
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
+                    {/* Category Badge */}
+                    <span className="inline-block px-3 py-1 rounded-full bg-muted text-xs text-muted-foreground mb-3">
+                      {post.category}
+                    </span>
+
+                    {/* Title */}
+                    <h2 className="text-2xl tracking-tight mb-3 group-hover:text-primary transition-colors">
+                      {post.title}
+                    </h2>
+
+                    {/* Excerpt */}
+                    <p className="text-muted-foreground leading-relaxed mb-4">
+                      {post.excerpt}
+                    </p>
+
+                    {/* Meta Info & Read More */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          <span>{post.date}</span>
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="gap-1 group-hover:gap-2 group-hover:text-primary transition-all"
+                      >
+                        Read More
+                        <ArrowRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </motion.article>
+                ))
+              ) : (
+                <div className="text-center py-12 text-muted-foreground">
+                  No blog posts found.
                 </div>
-              </motion.article>
-            ))}
-          </div>
+              )}
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="mt-12 flex items-center justify-center gap-4">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <div className="text-sm font-mono">
+                  PAGE {currentPage} / {totalPages}
+                </div>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
+          </>
         )}
       </section>
 

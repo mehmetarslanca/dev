@@ -5,9 +5,8 @@ import com.arslanca.dev.business.dto.requests.CreateBlogRequest;
 import com.arslanca.dev.business.dto.responses.GetBlogResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/blogs")
@@ -16,8 +15,11 @@ public class BlogController {
     private final BlogService blogService;
 
     @GetMapping
-    public List<GetBlogResponse> getAll(){
-        return blogService.getAll();
+    public Page<GetBlogResponse> getAll(
+            @RequestParam(defaultValue = "1") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize
+    ){
+        return blogService.getAll(pageNo, pageSize);
     }
 
     @PostMapping

@@ -10,11 +10,13 @@ import com.arslanca.dev.core.utilities.exceptions.types.NotFoundException;
 import com.arslanca.dev.dataAccess.BlogRepository;
 import com.arslanca.dev.entities.BlogPost;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +26,11 @@ public class BlogManager implements BlogService {
     private final BlogMapper blogMapper;
 
     @Override
-    public List<GetBlogResponse> getAll() {
-        List<BlogPost> posts = blogRepository.findAll(Sort.by(Sort.Direction.DESC, "createdDate"));
-        return posts.stream()
-                .map(blogMapper::toResponse)
-                .toList();
+    public Page<GetBlogResponse> getAll(int pageNo, int pageSize) {
+        if (pageNo < 1) pageNo = 1;
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by(Sort.Direction.DESC, "createdDate"));
+
+        return blogRepository.findAll(pageable).map(blogMapper::toResponse);
     }
 
 

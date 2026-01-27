@@ -36,6 +36,17 @@ export interface BlogPost {
   createdDate: string;
 }
 
+export interface PaginatedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
+  first: boolean;
+  last: boolean;
+  empty: boolean;
+}
+
 export interface SimulationScenarioResponse {
   id: string;
   title: string;
@@ -84,7 +95,7 @@ export const api = {
     sendMessage: (data: SendMailRequest) => client.post('/contact', data),
   },
   projects: {
-    getAll: () => client.get<GithubRepoResponse[]>('/projects').then((res) => res.data),
+    getAll: (pageNo = 1, pageSize = 10) => client.get<GithubRepoResponse[]>(`/projects?pageNo=${pageNo}&pageSize=${pageSize}`).then((res) => res.data),
   },
     pinnedProjects: {
     getAll: () => client.get<PinnedProject[]>('/pinned-projects').then((res) => res.data),
@@ -99,7 +110,8 @@ export const api = {
     getCurrent: () => client.get<StatsResponse>('/stats/current').then((res) => res.data),
   },
   blogs: {
-    getAll: () => client.get<BlogPost[]>('/blogs').then((res) => res.data),
+    getAll: (pageNo = 1, pageSize = 10) =>
+      client.get<PaginatedResponse<BlogPost>>(`/blogs?pageNo=${pageNo}&pageSize=${pageSize}`).then((res) => res.data),
     add: (data: { title: string; content: string }, authHeader: string) =>
       client.post('/blogs', data, { headers: { 'Authorization': authHeader } }),
     update: (id: number, data: { title: string; content: string }, authHeader: string) =>

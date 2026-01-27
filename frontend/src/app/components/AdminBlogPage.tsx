@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/app/components/ui/select";
 import { api, BlogPost, PinnedProject, GithubRepoResponse } from "@/app/api"; // Added PinnedProject
-import { Trash2, Plus, LogOut, FileText, ChevronLeft, Edit, Layers } from "lucide-react"; // Added Layers
+import { Trash2, Plus, LogOut, FileText, ChevronLeft, Edit, Layers, ArrowRight } from "lucide-react"; // Added Layers
 import { toast } from "sonner";
 
 export function AdminBlogPage() {
@@ -24,6 +24,8 @@ export function AdminBlogPage() {
 
   // Blog State
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
@@ -44,8 +46,9 @@ export function AdminBlogPage() {
 
   const fetchBlogs = async () => {
     try {
-      const data = await api.blogs.getAll();
-      setBlogs(data);
+      const data = await api.blogs.getAll(currentPage, 10);
+      setBlogs(data.content);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error("Failed to fetch blogs", error);
     }
@@ -60,7 +63,7 @@ export function AdminBlogPage() {
       }
   }
 
-  // Refetch when tab changes or login status changes
+  // Refetch when tab changes or login status changes or page changes
   useEffect(() => {
     if (isLoggedIn) {
         if (activeTab === "blog") fetchBlogs();
@@ -69,7 +72,7 @@ export function AdminBlogPage() {
             fetchGithubRepos();
         }
     }
-  }, [activeTab, isLoggedIn]);
+  }, [activeTab, isLoggedIn, currentPage]);
 
   const fetchGithubRepos = async () => {
     try {
@@ -382,6 +385,31 @@ export function AdminBlogPage() {
                 </motion.div>
                 ))}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="mt-8 flex items-center justify-center gap-4">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                    >
+                        <ChevronLeft className="w-4 h-4 mr-1" /> Previous
+                    </Button>
+                    <span className="text-sm font-mono">
+                        {currentPage} / {totalPages}
+                    </span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                    >
+                        Next <ArrowRight className="w-4 h-4 ml-1" />
+                    </Button>
+                </div>
+            )}
         </>
       ) : (
         <>

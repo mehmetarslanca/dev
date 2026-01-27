@@ -19,34 +19,51 @@ interface Project extends GithubRepoResponse {
 export function PortfolioPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const pageSize = 6;
   const { role, welcomeShown, setWelcomeShown } = useUser();
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const data = await api.projects.getAll();
-        // Transform the data to match UI needs if necessary
-        // Backend returns: name, description, html_url (as url), stargazers_count (as stars string), language
-        // Frontend expects: Project interface structure
-        
-        const transformedProjects = data.map(repo => ({
-          ...repo,
-          // Map backend fields to frontend expected fields if names differ
-          homepage: null, // Backend doesn't strictly provide this yet
-          forks_count: 0, // Backend doesn't provide this yet
-          topics: [],     // Backend doesn't provide this yet
-        }));
-        
-        setProjects(transformedProjects);
-      } catch (error) {
-        console.error("Failed to fetch projects", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchProjects = async (pageNo: number) => {
+    setLoading(true);
+    try {
+      const data = await api.projects.getAll(pageNo, pageSize);
 
-    fetchProjects();
-  }, []);
+      const transformedProjects = data.map(repo => ({
+        ...repo,
+        homepage: null,
+        forks_count: 0,
+        topics: [],
+      }));
+
+      setProjects(transformedProjects);
+      // If we got fewer projects than pageSize, we know there are no more pages
+      setHasMore(data.length === pageSize);
+    } catch (error) {
+      console.error("Failed to fetch projects", error);
+      toast.error("Failed to fetch projects");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjects(page);
+  }, [page]);
+
+  const handleNextPage = () => {
+    if (hasMore) {
+      setPage(prev => prev + 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (page > 1) {
+      setPage(prev => prev - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-screen pt-20">
@@ -65,13 +82,13 @@ export function PortfolioPage() {
           </p>
         </motion.div>
 
-        <OnGoingProjects />
+        {page === 1 && <OnGoingProjects />}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="max-w-3xl mb-12 mt-32"
+          className={`max-w-3xl mb-12 ${page === 1 ? 'mt-32' : 'mt-8'}`}
         >
           <h2 className="text-2xl md:text-3xl tracking-tight mb-4 font-mono border-l-4 border-muted pl-4">
              GitHub Projects
@@ -90,7 +107,7 @@ export function PortfolioPage() {
           <div className="grid md:grid-cols-2 gap-6">
             {projects.map((project, index) => (
               <motion.div
-                key={project.id}
+                key={project.name}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
@@ -175,6 +192,31 @@ export function PortfolioPage() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {!loading && (
+          <div className="flex justify-center gap-4 mt-16">
+            <Button
+              variant="outline"
+              onClick={handlePrevPage}
+              disabled={page === 1}
+              className="font-mono"
+            >
+              Previous
+            </Button>
+            <div className="flex items-center px-4 font-mono text-sm">
+              Page {page}
+            </div>
+            <Button
+              variant="outline"
+              onClick={handleNextPage}
+              disabled={!hasMore}
+              className="font-mono"
+            >
+              Next
+            </Button>
           </div>
         )}
       </section>

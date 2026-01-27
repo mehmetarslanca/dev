@@ -5,5 +5,5 @@ import com.arslanca.dev.business.dto.responses.GithubRepoResponse;
 import java.util.List;
 
 public interface ProjectService {
-    List<GithubRepoResponse> getProjects();
+    List<GithubRepoResponse> getProjects(int pageNo, int pageSize);
 }

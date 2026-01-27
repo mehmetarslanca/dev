@@ -54,3 +54,8 @@ Repolardan README.md çekilip Markdown'dan HTML'e parse edilecek ve dil dağıl�
 
 ### Canlı Ziyaretçi Sayacı
 Websocket veya Server-Sent Events ile o an sitede kaç kişinin olduğu real-time gösterilecek (Spring WebSocket/SSE).
+
+## Swagger Documentation
+After starting the application, you can access the API documentation at:
+- Swagger UI: http://localhost:8080/swagger-ui/index.html
+- OpenAPI Docs: http://localhost:8080/v3/api-docs

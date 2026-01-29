@@ -2,6 +2,8 @@ package com.arslanca.dev.business.dto.responses;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data
 public class GithubRepoResponse {

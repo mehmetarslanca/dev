@@ -30,5 +30,6 @@ public class BlogPost {
 
     @Column(name = "is_draft")
     private Boolean isDraft; //gelecekte eklicem
+    
 
 }

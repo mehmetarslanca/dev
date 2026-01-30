@@ -5,7 +5,7 @@ import com.arslanca.dev.business.dto.requests.UpdatePinnedProjectRequest;
 import com.arslanca.dev.business.dto.responses.PinnedProjectResponse;
 import com.arslanca.dev.business.mappers.PinnedProjectMapper;
 import com.arslanca.dev.dataAccess.PinnedProjectRepository;
-import com.arslanca.dev.entities.concretes.PinnedProject;
+import com.arslanca.dev.entities.PinnedProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

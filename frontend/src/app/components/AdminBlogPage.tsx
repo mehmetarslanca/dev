@@ -293,7 +293,7 @@ export function AdminBlogPage() {
                 className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 bg-background"
               />
               <label htmlFor="rememberMe" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                Remember me (15 days)
+                Remember me
               </label>
             </div>
             {errorMessage && <p className="text-red-500 text-sm text-center">{errorMessage}</p>}

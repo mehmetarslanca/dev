@@ -2,7 +2,7 @@ package com.arslanca.dev.business.mappers;
 
 import com.arslanca.dev.business.dto.requests.CreateBlogRequest;
 import com.arslanca.dev.business.dto.responses.GetBlogResponse;
-import com.arslanca.dev.entities.concretes.BlogPost;
+import com.arslanca.dev.entities.BlogPost;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 

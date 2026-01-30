@@ -1,6 +1,6 @@
 package com.arslanca.dev.dataAccess;
 
-import com.arslanca.dev.entities.concretes.User;
+import com.arslanca.dev.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

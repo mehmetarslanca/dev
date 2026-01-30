@@ -1,7 +1,7 @@
 package com.arslanca.dev.core.config;
 
 import com.arslanca.dev.dataAccess.UserRepository;
-import com.arslanca.dev.entities.concretes.User;
+import com.arslanca.dev.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;

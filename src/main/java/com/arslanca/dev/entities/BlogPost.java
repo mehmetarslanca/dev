@@ -1,4 +1,4 @@
-package com.arslanca.dev.entities.concretes;
+package com.arslanca.dev.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

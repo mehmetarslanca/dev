@@ -13,6 +13,7 @@ import {
 import { api, BlogPost, PinnedProject, GithubRepoResponse } from "@/app/api"; // Added PinnedProject
 import { Trash2, Plus, LogOut, FileText, ChevronLeft, Edit, Layers, ArrowRight } from "lucide-react"; // Added Layers
 import { toast } from "sonner";
+import { ContentRenderer } from "./ContentRenderer";
 
 export function AdminBlogPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -352,7 +353,7 @@ export function AdminBlogPage() {
                         <ChevronLeft className="w-4 h-4 mr-1" /> Cancel
                     </Button>
                     </div>
-                    <Input
+                     <Input
                         placeholder="Post Title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
@@ -362,13 +363,23 @@ export function AdminBlogPage() {
                         className="text-lg font-medium"
                     />
                     <Textarea
-                        placeholder="Write your thoughts..."
+                        placeholder="Write your thoughts... Image URLs allow you to embed images."
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         required
-                        maxLength={2000}
+                        maxLength={50000}
                         className="min-h-[300px] font-mono text-sm leading-relaxed"
                     />
+
+                     {content && (
+                        <div className="mt-6 p-6 border border-border rounded-lg bg-card/50">
+                            <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-widest">Live Preview</h3>
+                             <div className="max-h-[400px] overflow-y-auto pr-2">
+                                <ContentRenderer content={content} />
+                             </div>
+                        </div>
+                    )}
+
                     <div className="flex justify-end pt-4">
                     <Button type="submit" disabled={status === "loading"}>
                         {status === "loading" ? "Saving..." : (editingId ? "Update Post" : "Publish Post")}

@@ -12,6 +12,7 @@ import { api, BlogPost as ApiBlogPost } from "@/app/api";
 import { useEffect, useState } from "react";
 import { useUser } from "@/app/context/UserContext";
 import { toast } from "sonner";
+import { ContentRenderer } from "./ContentRenderer";
 
 interface BlogPost extends ApiBlogPost {
   category: string;
@@ -238,16 +239,7 @@ export function BlogPage() {
                     </div>
                   </div>
 
-                  <div className="prose prose-zinc dark:prose-invert max-w-none text-zinc-300">
-                    {selectedPost.content?.split("\n").map((paragraph, i) => (
-                      <p
-                        key={i}
-                        className="mb-6 leading-relaxed text-lg lg:text-xl font-light"
-                      >
-                        {paragraph}
-                      </p>
-                    ))}
-                  </div>
+                  <ContentRenderer content={selectedPost.content} />
 
                   <div className="mt-24 pt-8 border-t border-border opacity-50 flex justify-between items-center text-xs font-mono">
                     <span>END_OF_TRANSMISSION</span>

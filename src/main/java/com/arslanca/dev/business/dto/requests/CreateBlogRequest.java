@@ -10,6 +10,6 @@ public class CreateBlogRequest {
     @Size (min = 5, max=250)
     private String title;
     @NotBlank
-    @Size (max = 2000)
+    @Size (max = 50000)
     private String content;
 }

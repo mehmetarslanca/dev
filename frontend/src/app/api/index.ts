@@ -9,16 +9,19 @@ client.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
+
+        // Prevent infinite loops
+        if (originalRequest.url?.includes('/auth/refresh-token')) {
+            return Promise.reject(error);
+        }
+
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
                 await client.post('/auth/refresh-token');
                 return client(originalRequest);
             } catch (err) {
-                if (window.location.pathname.startsWith('/admin')) {
-                   // window.location.reload();
-                   // Don't reload, just fail. Login page will show.
-                }
+                 return Promise.reject(err);
             }
         }
         return Promise.reject(error);

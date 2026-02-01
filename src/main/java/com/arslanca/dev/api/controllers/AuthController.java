@@ -60,9 +60,6 @@ public class AuthController {
         var jwtToken = jwtService.generateToken(user);
         var refreshToken = jwtService.generateRefreshToken(user);
 
-        // Save Refresh Token to DB
-        // First revoke all old tokens for this user? Or allow multiple? Usually for 1 user 1 device, revoke old. Or allow multiple sessions.
-        // Let's implement multiple session support but clean up revoked ones later. For now, simple insert.
         RefreshToken rt = RefreshToken.builder()
                 .user(user)
                 .token(refreshToken)
@@ -100,22 +97,17 @@ public class AuthController {
             var user = userRepository.findByUsername(username).orElseThrow();
             if (jwtService.isTokenValid(refreshToken, user)) {
 
-                // Check DB
                 var storedToken = refreshTokenRepository.findByToken(refreshToken)
                         .orElse(null);
 
                 if (storedToken == null || storedToken.isRevoked()) {
-                     // Reuse Detection or simply Invalid
-                     // If Reuse Detection: revoke all tokens for this user
                      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or Revoked Token");
                 }
 
-                // Revoke current (Rotation)
                 storedToken.setRevoked(true);
                 refreshTokenRepository.save(storedToken);
 
                 String newAccessToken = jwtService.generateToken(user);
-                // Rotate Refresh Token too? Yes, for security.
                 String newRefreshToken = jwtService.generateRefreshToken(user);
 
                 RefreshToken rt = RefreshToken.builder()
@@ -136,7 +128,7 @@ public class AuthController {
                 refreshCookie.setHttpOnly(true);
                 refreshCookie.setSecure(false);
                 refreshCookie.setPath("/api/auth/refresh-token");
-                refreshCookie.setMaxAge(24 * 60 * 60); // Default 1 day for rotated token, or carry over? Defaults logic.
+                refreshCookie.setMaxAge(15 * 24 * 60 * 60);
 
                 response.addCookie(accessCookie);
                 response.addCookie(refreshCookie);

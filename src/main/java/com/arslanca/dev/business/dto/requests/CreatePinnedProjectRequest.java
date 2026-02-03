@@ -23,4 +23,7 @@ public class CreatePinnedProjectRequest {
     private List<String> tags;
 
     private String githubUrl;
+
+    @Size(max = 2000)
+    private String longDescription;
 }

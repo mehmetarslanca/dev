@@ -17,6 +17,11 @@ function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Ensure dark mode is applied to the root element for portals and modals
+    document.documentElement.classList.add('dark');
+  }, []);
+
   // Map path to page name for old logic if needed, but better to use routes
   const getPageFromPath = (path: string) => {
     if (path === "/admin") return "admin";
@@ -30,7 +35,7 @@ function AppContent() {
   const currentPage = getPageFromPath(location.pathname);
 
   return (
-    <div className="min-h-screen bg-background text-foreground dark relative">
+    <div className="min-h-screen bg-background text-foreground relative">
       {/* Animated Tech Background */}
       <TechBackground />
       

@@ -22,6 +22,9 @@ public class PinnedProject {
     @Column(length = 2000)
     private String description;
 
+    @Column (length = 2000)
+    private String longDescription;
+
     @ElementCollection
     @CollectionTable(name = "pinned_project_tags", joinColumns = @JoinColumn(name = "project_id"))
     @Column(name = "tag")

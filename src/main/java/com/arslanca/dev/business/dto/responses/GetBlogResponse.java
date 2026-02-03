@@ -17,4 +17,8 @@ public class GetBlogResponse {
     private String content;
 
     private LocalDate createdDate;
+
+    private String category;
+
+
 }

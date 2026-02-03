@@ -32,6 +32,7 @@ export function AdminBlogPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [blogCategory, setBlogCategory] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
 
@@ -39,6 +40,7 @@ export function AdminBlogPage() {
   const [projects, setProjects] = useState<PinnedProject[]>([]);
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDesc, setProjectDesc] = useState("");
+  const [projectLongDesc, setProjectLongDesc] = useState("");
   const [projectTags, setProjectTags] = useState("");
   const [projectGithub, setProjectGithub] = useState("");
   const [editingProjectId, setEditingProjectId] = useState<number | null>(null);
@@ -152,14 +154,15 @@ export function AdminBlogPage() {
     setStatus("loading");
     try {
       if (editingId) {
-        await api.blogs.update(editingId, { title, content });
+        await api.blogs.update(editingId, { title, content, category: blogCategory });
       } else {
-        await api.blogs.add({ title, content });
+        await api.blogs.add({ title, content, category: blogCategory });
       }
       setStatus("success");
       toast.success(editingId ? "Updated!" : "Published!", { description: "Blog post saved successfully." });
       setTitle("");
       setContent("");
+      setBlogCategory("");
       setEditingId(null);
       setIsAddingNew(false);
       fetchBlogs();
@@ -193,6 +196,7 @@ export function AdminBlogPage() {
               await api.pinnedProjects.update(editingProjectId, {
                   title: projectTitle,
                   description: projectDesc,
+                  longDescription: projectLongDesc,
                   tags: tagsArray,
                   githubUrl: projectGithub || undefined
               });
@@ -200,6 +204,7 @@ export function AdminBlogPage() {
               await api.pinnedProjects.add({
                   title: projectTitle,
                   description: projectDesc,
+                  longDescription: projectLongDesc,
                   tags: tagsArray,
                   githubUrl: projectGithub || undefined
               });
@@ -210,6 +215,7 @@ export function AdminBlogPage() {
           });
           setProjectTitle("");
           setProjectDesc("");
+          setProjectLongDesc("");
           setProjectTags("");
           setProjectGithub("");
           setEditingProjectId(null);
@@ -287,6 +293,7 @@ export function AdminBlogPage() {
   const handleEditClick = (blog: BlogPost) => {
     setTitle(blog.title);
     setContent(blog.content);
+    setBlogCategory(blog.category || "");
     setEditingId(blog.id);
     setIsAddingNew(true);
   };
@@ -294,6 +301,7 @@ export function AdminBlogPage() {
   const handleEditProjectClick = (project: PinnedProject) => {
       setProjectTitle(project.title);
       setProjectDesc(project.description);
+      setProjectLongDesc(project.longDescription || "");
       setProjectTags(project.tags.join(', '));
       setProjectGithub(project.githubUrl || "");
       setEditingProjectId(project.id);
@@ -402,19 +410,27 @@ export function AdminBlogPage() {
                 >
                     <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-medium">{editingId ? "Edit Post" : "New Post"}</h2>
-                    <Button type="button" variant="ghost" size="sm" onClick={() => { setIsAddingNew(false); setEditingId(null); setTitle(""); setContent(""); }}>
+                    <Button type="button" variant="ghost" size="sm" onClick={() => { setIsAddingNew(false); setEditingId(null); setTitle(""); setContent(""); setBlogCategory(""); }}>
                         <ChevronLeft className="w-4 h-4 mr-1" /> Cancel
                     </Button>
                     </div>
-                     <Input
-                        placeholder="Post Title"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                        minLength={5}
-                        maxLength={250}
-                        className="text-lg font-medium"
-                    />
+                     <div className="flex gap-4">
+                        <Input
+                            placeholder="Post Title"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
+                            required
+                            minLength={5}
+                            maxLength={250}
+                            className="text-lg font-medium flex-[3]"
+                        />
+                        <Input
+                            placeholder="Category (e.g. Technology)"
+                            value={blogCategory}
+                            onChange={(e) => setBlogCategory(e.target.value)}
+                            className="text-lg font-medium flex-1"
+                        />
+                     </div>
                     <Textarea
                         placeholder="Write your thoughts... Image URLs allow you to embed images."
                         value={content}
@@ -526,6 +542,12 @@ export function AdminBlogPage() {
                                   onChange={(e) => setProjectDesc(e.target.value)}
                                   required
                               />
+                              <Textarea
+                                  placeholder="Long Description (Details, features...)"
+                                  value={projectLongDesc}
+                                  onChange={(e) => setProjectLongDesc(e.target.value)}
+                                  className="min-h-[150px]"
+                              />
                                <Input
                                   placeholder="Tags (comma separated)"
                                   value={projectTags}
@@ -562,7 +584,7 @@ export function AdminBlogPage() {
 
                {!isAddingProject && (
                   <Button onClick={() => {
-                      setProjectTitle(""); setProjectDesc(""); setProjectTags(""); setProjectGithub(""); setEditingProjectId(null); setIsAddingProject(true);
+                      setProjectTitle(""); setProjectDesc(""); setProjectLongDesc(""); setProjectTags(""); setProjectGithub(""); setEditingProjectId(null); setIsAddingProject(true);
                   }} className="mb-8">
                        <Plus className="w-4 h-4 mr-2" /> Pin New Project
                   </Button>

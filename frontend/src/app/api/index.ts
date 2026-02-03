@@ -52,6 +52,7 @@ export interface BlogPost {
   id: number;
   title: string;
   content: string;
+  category?: string;
   imageUrl?: string;
   createdDate: string;
 }
@@ -96,12 +97,14 @@ export interface PinnedProject {
   description: string;
   tags: string[];
   githubUrl?: string;
+  longDescription?: string;
 }
 export interface CreatePinnedProjectRequest {
   title: string;
   description: string;
   tags: string[];
   githubUrl?: string;
+  longDescription?: string;
 }
 export interface CreateTechStackRequest {
   name: string;
@@ -144,8 +147,8 @@ export const api = {
   },
   blogs: {
     getAll: (pageNo = 1, pageSize = 10) => client.get<PaginatedResponse<BlogPost>>((`/blogs?pageNo=${pageNo}&pageSize=${pageSize}`)).then((res) => res.data),
-    add: (data: { title: string; content: string }) => client.post('/blogs', data),
-    update: (id: number, data: { title: string; content: string }) => client.put((`/blogs/${id}`), data),
+    add: (data: { title: string; content: string; category?: string }) => client.post('/blogs', data),
+    update: (id: number, data: { title: string; content: string; category?: string }) => client.put((`/blogs/${id}`), data),
     delete: (id: number) => client.delete((`/blogs/${id}`)),
   },
   simulation: {

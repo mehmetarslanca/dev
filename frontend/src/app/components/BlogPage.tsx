@@ -47,7 +47,7 @@ export function BlogPage() {
         setPosts(
           data.content.map((post) => ({
             ...post,
-            category: "Technology",
+            category: post.category || "General",
             excerpt: post.content
               ? post.content.substring(0, 150) + "..."
               : "No preview available",

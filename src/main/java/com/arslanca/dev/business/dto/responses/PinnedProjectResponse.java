@@ -15,4 +15,5 @@ public class PinnedProjectResponse {
     private String description;
     private List<String> tags;
     private String githubUrl;
+    private String longDescription;
 }

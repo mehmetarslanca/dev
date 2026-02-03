@@ -40,6 +40,8 @@ public class BlogManager implements BlogService {
             throw new BusinessException("Bu başlıkta bir blog yazısı zaten mevcut: " + request.getTitle());
         }
 
+        setDefaultCategory(request);
+
         BlogPost blogPost = blogMapper.toBlogPost(request);
         blogPost.setCreatedDate(LocalDate.now());
         blogRepository.save(blogPost);
@@ -48,6 +50,8 @@ public class BlogManager implements BlogService {
     @Override
     public void update(int id, CreateBlogRequest request) {
         BlogPost blogPost = blogRepository.findById(id).orElseThrow(() -> new NotFoundException("Blog yazısı bulunamadı (ID: " + id + ")"));
+
+        setDefaultCategory(request);
 
         blogMapper.updateBlogPostFromRequest(request, blogPost);
         blogRepository.save(blogPost);
@@ -62,6 +66,12 @@ public class BlogManager implements BlogService {
     private void checkIfBlogExists(int id) {
         if (!blogRepository.existsById(id)) {
             throw new NotFoundException("Silinecek blog yazısı bulunamadı (ID: " + id + ")");
+        }
+    }
+
+    private void setDefaultCategory(CreateBlogRequest request) {
+        if (request.getCategory() == null || request.getCategory().isBlank()) {
+            request.setCategory("General");
         }
     }
 }

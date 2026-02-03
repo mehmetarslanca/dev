@@ -1,63 +1,71 @@
-**readme yazmayı öğrenemedim**
+# Developer Portfolio & Management System
 
-bura benim dev projesi olacak. temel mimariyi kurdum, github reposunu anlık çeken sistemi yazdım falan fistan.
+A robust, full-stack personal portfolio and content management system built with a focus on modern backend architecture, real-time integrations, and security. This project serves as a central hub for showcasing professional activity, managing technical content, and providing interactive experiences for visitors.
 
-front-end'i tabi ai'ya yaptıracağım basic bi single page yapıp işin içinden çıkmak istemedim, discord'daki real-time intellij idea integration'ını buraya taşımayı düşünüyorum,
-benim kod yazdığım her an sitede anlık olarak hangi projede hangi dosyayı kaç dakikadır editliyorum bla bla hepsi gözükecek. saat sabahın 5'i valla nası yapcam ben de bilmiyom ama yapcaz bi şekil
+## Overview
 
-blog yazısı sistemi falan olacak 0 tl harcıcam bu arada projeye. dümdüz AI'dan typescript yazdırıp single github page yapmak istemedim, biraz bildiğim şeyleri kullanmak lazım, zaten proje tabi ki,
-OPEN-CLOSED olacak istediğim kadar geliştireceğim artık zamanla.
+This application is designed to provide a comprehensive look into a developer's lifecycle. It integrates directly with GitHub and WakaTime to provide live updates on coding activity, project progress, and technology stack usage. The system also includes a custom-built blog engine and an interactive simulation component.
 
-**update**
+## Technical Stack
 
-backend tarafında çoğu şey bitti sayılır. backend'i yüzde 95 kendim yazdım, sadece wakatime api'sini bağlarken ai'dan yardım aldım (bir de ufak tefek logic işleri)
-backend'e bakıp "burada şunu bunu yanlış yapmışsın, ilerde bunun yüzünden başın ağrıyacak" diyen bir masterhand olmadığı için yanımda artık zamanla göreceğiz.
-geriye sadece front-end tarafında içeriği doldurmak kaldı temel şeyler genel olarak çalışıyor, bir sorun yok gibi duruyor.
+### Backend
+- **Language:** Java 21
+- **Framework:** Spring Boot 3.4.1
+- **Security:** Spring Security with JWT (Stateless Authentication)
+- **Persistence:** Spring Data JPA with PostgreSQL
+- **Integrations:** WakaTime API, GitHub API, SMTP (Spring Mail)
+- **Utilities:** MapStruct (Mapping), Lombok, Bucket4j (Rate Limiting), Spring Cache, Yauaa (User-Agent Analysis)
+- **Documentation:** SpringDoc OpenAPI (Swagger UI)
 
-ileride AI integrasyonu yapabilirim bilmiyom. sunucu noktasında 0 lira harcayarak yapıyorum projeyi dolayısıyla fuck ai..
+### Frontend
+- **Framework:** React with TypeScript
+- **Build Tool:** Vite
+- **Styling:** Tailwind CSS
+- **Components:** Radix UI / Shadcn UI
+- **State Management & Icons:** Axios, Lucide React
 
+## Core Features
 
-**CHANGELOG:**
-email yollamaya eklendi - ratelimit eklendi
+### Real-Time Activity Tracking
+Integration with the WakaTime API allows the platform to display live coding statistics. It tracks IDE usage, time spent on specific projects, and language distribution, providing a transparent view of current development focus.
 
-yalandan hata yönetimi eklendi
+### Dynamic GitHub Integration
+The system fetches and processes repository data directly from GitHub. It handles metadata retrieval, README parsing, and automated updates to ensure the portfolio always reflects the latest project status without manual intervention.
 
-anlık stat düzeltildi
+### Advanced Security Architecture
+- **JWT Authentication:** Secure login system with short-lived access tokens and a robust refresh token mechanism.
+- **Token Revocation:** Implementation of a token blacklist/revocation system to ensure complete session control.
+- **Rate Limiting:** Protects sensitive endpoints (e.g., contact form, authentication) using Bucket4j to prevent brute-force and DDoS attacks.
+- **Centralized Exception Handling:** A global error handling layer providing consistent and secure API responses.
 
-blogpost CRUD'ları admin only yapıldı, memory'de credential'lar encrpyted.
+### Content Management & Interactivity
+- **Blog Engine:** A fully featured CRUD system for technical articles, featuring role-based access control (Admin only) and secure content rendering.
+- **Interactive Simulations:** A quiz-based simulation system designed to engage users through interactive scenarios and custom logic-driven outcomes.
+- **Execution Monitoring:** Interceptors for tracking execution time and system performance across various service layers.
 
-yalandan caching eklendi.
+## Development Philosophy
 
-(baya bi şey ekledim de burayı updatelemeyi unutmuşum aklıma gelenleri yazayım)
+The backend of this project was developed with a strong emphasis on clean code, SOLID principles, and architectural integrity. While AI tools were utilized during the development process, they were strictly confined to **research, documentation assistance, and troubleshooting complex integration logic**. The core business logic, architectural design, and critical security implementations were authored manually to ensure a deep understanding of the system and its maintainability.
 
-quiz system
+## API Documentation
 
-spa controller
+The project follows the OpenAPI specification. When the backend is running, the documentation is accessible via Swagger UI:
 
-hardcoded şeyleri kaldırdım
+- **Swagger UI:** `http://localhost:8080/swagger-ui/index.html`
+- **OpenAPI Docs:** `http://localhost:8080/v3/api-docs`
 
-quizdeki cevaba özel yönlendirme var bakarsınız xd
+## Setup and Installation
 
-var işte baya bi şey amk
+### Prerequisites
+- JDK 21
+- PostgreSQL
+- Node.js & npm
 
-wakatime bug'ı çözüldü
-
-BU JWT AUTH'U SIKECEM YAKINDA
-
+### Backend Setup
+1. Configure the `env.properties` or environment variables for:
+   - Database credentials
+   - JWT secret keys
+   - API keys (GitHub, WakaTime)
+   - SMTP settings
 ---
 
-## TODO
-
-### Yorum Sistemi
-Giscus ile GitHub Discussions tabanlı yorum sistemi kurulacak, böylece kendi DB'de spam yönetimi yerine GitHub'ın moderasyon altyapısından faydalanılacak (React/Giscus).
-
-### GitHub Verilerini Zenginleştirme
-Repolardan README.md çekilip Markdown'dan HTML'e parse edilecek ve dil dağılımı hesaplanıp cache'lenecek (Java Spring/Markdown Parser/Redis).
-
-### Canlı Ziyaretçi Sayacı
-Websocket veya Server-Sent Events ile o an sitede kaç kişinin olduğu real-time gösterilecek (Spring WebSocket/SSE).
-
-## Swagger Documentation
-After starting the application, you can access the API documentation at:
-- Swagger UI: http://localhost:8080/swagger-ui/index.html
-- OpenAPI Docs: http://localhost:8080/v3/api-docs

@@ -10,6 +10,7 @@ import { AIHelperWidget } from "@/app/components/AIHelperWidget";
 import { TechBackground } from "@/app/components/TechBackground";
 import { AdminBlogPage } from "@/app/components/AdminBlogPage";
 import { UserProvider } from "@/app/context/UserContext";
+import { ConfigProvider } from "@/app/context/ConfigContext";
 import { QuizModal } from "@/app/components/QuizModal";
 import { Toaster } from "@/app/components/ui/sonner";
 
@@ -35,7 +36,7 @@ function AppContent() {
   const currentPage = getPageFromPath(location.pathname);
 
   return (
-    <div className="min-h-screen bg-background text-foreground relative">
+    <div className="min-h-screen text-foreground relative overflow-x-hidden">
       {/* Animated Tech Background */}
       <TechBackground />
       
@@ -64,8 +65,6 @@ function AppContent() {
 
       {/* AI Helper Widget - Fixed Bottom Right */}
       <AIHelperWidget />
-      
-      <Toaster position="top-center" toastOptions={{ duration: 5000 }} />
 
       {/* Footer */}
       <footer className="border-t border-border mt-24">
@@ -83,10 +82,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <ConfigProvider>
       <UserProvider>
-        <AppContent />
+        <BrowserRouter>
+          <AppContent />
+          <Toaster />
+        </BrowserRouter>
       </UserProvider>
-    </BrowserRouter>
+    </ConfigProvider>
   );
 }
+

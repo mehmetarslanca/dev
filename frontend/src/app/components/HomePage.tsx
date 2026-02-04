@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
 import { Button } from "@/app/components/ui/button";
 import { WakaTimeModal } from "@/app/components/WakaTimeModal";
 import { BarChart3, Github, Linkedin, Mail, ExternalLink } from "lucide-react";
@@ -7,6 +7,77 @@ import { useUser } from "@/app/context/UserContext";
 import { toast } from "sonner";
 import { api } from "@/app/api";
 import { ArchitectureTree } from "@/app/components/ArchitectureTree";
+import { useConfig } from "@/app/context/ConfigContext";
+
+// --- Crber-Minimalism Components ---
+
+const TextDecode = ({ text, className, delay = 0 }: { text: string, className?: string, delay?: number }) => {
+  const [displayText, setDisplayText] = useState("");
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => setStarted(true), delay);
+    return () => clearTimeout(timeout);
+  }, [delay]);
+
+  useEffect(() => {
+    if (!started) return;
+
+    let iteration = 0;
+    const interval = setInterval(() => {
+      setDisplayText(text
+        .split("")
+        .map((letter, index) => {
+          if (index < iteration) {
+            return text[index];
+          }
+          return Math.random() > 0.5 ? "1" : "0";
+        })
+        .join("")
+      );
+
+      if (iteration >= text.length) {
+        clearInterval(interval);
+      }
+
+      iteration += 1 / 2; // Speed of decoding
+    }, 30);
+    return () => clearInterval(interval);
+  }, [text, started]);
+
+  return <span className={className}>{displayText || (started ? "" : <span className="opacity-0">{text}</span>)}</span>;
+}
+
+const MagneticWrapper = ({ children }: { children: React.ReactNode }) => {
+    const ref = useRef<HTMLDivElement>(null);
+    const [position, setPosition] = useState({x: 0, y: 0});
+
+    const handleMouse = (e: React.MouseEvent) => {
+        const { clientX, clientY } = e;
+        const rect = ref.current?.getBoundingClientRect();
+        if (rect) {
+            const middleX = clientX - (rect.left + rect.width / 2);
+            const middleY = clientY - (rect.top + rect.height / 2);
+            setPosition({ x: middleX * 0.15, y: middleY * 0.15 });
+        }
+    };
+
+    const reset = () => setPosition({x: 0, y: 0});
+
+    return (
+        <motion.div
+            ref={ref}
+            onMouseMove={handleMouse}
+            onMouseLeave={reset}
+            animate={{ x: position.x, y: position.y }}
+            transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+        >
+            {children}
+        </motion.div>
+    );
+};
+
+// --------------------------------
 
 function PhilosophyCard({ title, text, image, index }: { title: string; text: string; image: string; index: number }) {
   const ref = useRef(null);
@@ -19,20 +90,21 @@ function PhilosophyCard({ title, text, image, index }: { title: string; text: st
   const isEven = index % 2 === 0;
 
   return (
-    <div ref={ref} className={`flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"} items-center gap-16 mb-40 last:mb-20`}>
-      <motion.div 
+    <div ref={ref} className={`flex flex-col ${isEven ? "md:flex-row" : "md:flex-row-reverse"} items-center gap-16 mb-40 last:mb-20 animate-fade-in-up`}>
+      <motion.div
         style={{ y }}
-        className="flex-1 w-full relative h-[400px] overflow-hidden rounded-sm group bg-card/10 backdrop-blur-sm border border-border/20 flex items-center justify-center p-4"
+        className="flex-1 w-full relative h-[400px] overflow-hidden rounded-sm group glass-panel flex items-center justify-center p-8 group-hover:border-primary/30 transition-colors duration-500"
       >
+        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         <img
           src={image}
           alt={title}
-          className="w-full h-full object-contain transition-transform duration-1000 ease-in-out"
+          className="w-full h-full object-contain filter drop-shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-transform duration-1000 ease-in-out"
         />
       </motion.div>
       <div className="flex-1 text-left space-y-6">
-        <h3 className="text-4xl md:text-5xl font-light tracking-tight">{title}</h3>
-        <p className="text-xl text-muted-foreground leading-relaxed font-light">
+        <h3 className="text-4xl md:text-5xl font-bold tracking-tighter uppercase text-gradient">{title}</h3>
+        <p className="text-xl text-muted-foreground leading-relaxed font-light font-mono">
           {text}
         </p>
       </div>
@@ -43,6 +115,7 @@ function PhilosophyCard({ title, text, image, index }: { title: string; text: st
 export function HomePage() {
   const [showWakaTime, setShowWakaTime] = useState(false);
   const { role, welcomeShown, setWelcomeShown } = useUser();
+  const { githubProfileUrl } = useConfig()!;
   const [isCoding, setIsCoding] = useState(false);
   const [techStack, setTechStack] = useState<{ current: string[], learning: string[] }>({
       current: [],
@@ -115,13 +188,37 @@ export function HomePage() {
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-7xl tracking-tight mb-12 font-light leading-tight">
-            I choose simple. <br />
-            I build systems that work, <br />
-            systems that grow. <br />
-            No magic. Just logic.
+            <div className="flex flex-col gap-2">
+                <TextDecode text="I choose simple." />
+                <motion.span
+                    initial={{ opacity: 0, filter: "blur(10px)", y: 20 }}
+                    animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                    transition={{ delay: 1.5, duration: 0.8 }}
+                    className="text-muted-foreground"
+                >
+                    I build systems that work,
+                </motion.span>
+                <motion.span
+                     initial={{ opacity: 0, filter: "blur(10px)", y: 20 }}
+                     animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                     transition={{ delay: 2.0, duration: 0.8 }}
+                     className="text-muted-foreground"
+                >
+                    systems that grow.
+                </motion.span>
+                <motion.span
+                     initial={{ opacity: 0, filter: "blur(10px)", y: 20 }}
+                     animate={{ opacity: 1, filter: "blur(0px)", y: 0 }}
+                     transition={{ delay: 2.5, duration: 0.8 }}
+                     className="mt-4 block text-foreground"
+                >
+                    <TextDecode text="No magic. Just logic." delay={2500} />
+                </motion.span>
+            </div>
           </h1>
 
           <div className="flex items-center justify-center gap-4 flex-wrap mb-16">
+            <MagneticWrapper>
             <Button
               size="lg"
               className="gap-2 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-primary/40 transition-all rounded-sm relative overflow-hidden group"
@@ -135,22 +232,26 @@ export function HomePage() {
                   <span className="relative z-10">LinkedIn</span>
               </a>
             </Button>
-            <Button 
+            </MagneticWrapper>
+
+            <MagneticWrapper>
+            <Button
               size="lg" 
               variant="outline" 
               className="gap-2 border-border hover:border-primary/50 hover:text-primary transition-all rounded-sm"
               style={{ fontFamily: 'var(--font-mono)' }}
               asChild
             >
-              <a href="https://github.com/postaldudegoespostal" target="_blank" rel="noopener noreferrer">
+              <a href={githubProfileUrl} target="_blank" rel="noopener noreferrer">
                 <Github className="w-5 h-5" />
                 GitHub Profile
               </a>
             </Button>
+            </MagneticWrapper>
           </div>
 
           {/* Tech Stack Section (MOVED & CLEANED) */}
-          <div className="grid md:grid-cols-2 gap-12 text-left max-w-3xl mx-auto pt-16 border-t border-border/50">
+          <div className="grid md:grid-cols-2 gap-12 text-left max-w-3xl mx-auto pt-16 border-t border-white/5">
             {/* Current Stack */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -159,14 +260,14 @@ export function HomePage() {
               transition={{ delay: 0.2 }}
             >
               <div className="flex items-center gap-2 mb-6">
-                <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(220,38,38,0.6)]" />
-                <h3 className="text-lg font-mono uppercase tracking-wider">Current Stack</h3>
+                <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_15px_rgba(255,77,77,1)]" />
+                <h3 className="text-lg font-mono uppercase tracking-widest text-muted-foreground">Current Stack</h3>
               </div>
               <div className="flex flex-wrap gap-2">
                 {techStack.current.map((tech) => (
                   <span
                     key={tech}
-                    className="px-3 py-1.5 rounded border border-border bg-card/50 text-sm hover:border-primary/40 transition-all font-mono"
+                    className="px-4 py-2 rounded-sm border border-white/10 bg-white/5 text-sm transition-all duration-300 font-mono text-muted-foreground hover:text-white hover:border-primary hover:bg-primary/5 hover:shadow-[0_0_15px_rgba(255,77,77,0.4)] cursor-default uppercase tracking-tight"
                   >
                     {tech}
                   </span>
@@ -182,14 +283,14 @@ export function HomePage() {
               transition={{ delay: 0.3 }}
             >
               <div className="flex items-center gap-2 mb-6">
-                <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
-                <h3 className="text-lg font-mono uppercase tracking-wider">Advancing In</h3>
+                <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,1)]" />
+                <h3 className="text-lg font-mono uppercase tracking-widest text-muted-foreground">Advancing In</h3>
               </div>
               <div className="flex flex-wrap gap-2">
                 {techStack.learning.map((tech) => (
                   <span
                     key={tech}
-                    className="px-3 py-1.5 rounded border border-border bg-card/50 text-sm hover:border-blue-500/40 transition-all font-mono"
+                    className="px-4 py-2 rounded-sm border border-white/10 bg-white/5 text-sm transition-all duration-300 font-mono text-muted-foreground hover:text-white hover:border-blue-500 hover:bg-blue-500/5 hover:shadow-[0_0_15px_rgba(59,130,246,0.4)] cursor-default uppercase tracking-tight"
                   >
                     {tech}
                   </span>

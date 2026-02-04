@@ -24,8 +24,9 @@ export function QuizModal({ onNavigate }: QuizModalProps) {
             setScenario(data);
         } catch (err) {
             console.log("Failed to load scenario, defaulting visitor");
-            // If backend fails, fallback gracefully
+            // If backend fails, fallback gracefully - do not show modal
             setOpen(false);
+            setLoading(false);
         } finally {
             setLoading(false);
         }
@@ -35,9 +36,9 @@ export function QuizModal({ onNavigate }: QuizModalProps) {
     if (!hasTakenQuiz && !role && !isProtectedPage) {
         // Fetch question before showing
         fetchScenario();
-        // Delay showing until loaded or timeout
-        const timer = setTimeout(() => !loading && setOpen(true), 1000);
-        return () => clearTimeout(timer);
+    } else {
+        // User has already taken quiz or has a role, don't show modal
+        setLoading(false);
     }
   }, [hasTakenQuiz, role]);
 

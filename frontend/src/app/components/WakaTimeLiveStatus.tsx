@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Code2, Clock, FileCode } from "lucide-react";
 import { api, StatsResponse } from "@/app/api";
 
@@ -86,7 +86,10 @@ export function WakaTimeLiveStatus({ }: WakaTimeLiveStatusProps) {
   if (loading || !isOnline || !stats) {
     return (
       <div className="flex items-center gap-2 px-3 py-1.5 rounded border border-border bg-card/50" style={{ fontFamily: 'var(--font-mono)' }}>
-        <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+        <div className="relative">
+             <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+             <div className="absolute inset-0 w-2 h-2 rounded-full bg-red-500/20 animate-pulse" />
+        </div>
         <span className="text-sm text-muted-foreground">Offline</span>
       </div>
     );
@@ -109,14 +112,20 @@ export function WakaTimeLiveStatus({ }: WakaTimeLiveStatusProps) {
         style={{ fontFamily: 'var(--font-mono)' }}
       >
         {/* Pulsing Active Indicator - GREEN when online */}
-        <motion.div
-          className="relative"
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <div className="w-2 h-2 rounded-full bg-green-500" />
-          <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500/30 animate-ping" />
-        </motion.div>
+        <div className="relative flex items-center justify-center">
+            <motion.div
+                className="w-2 h-2 rounded-full bg-green-500 z-10"
+                animate={{
+                    boxShadow: [
+                        "0 0 0 0px rgba(34, 197, 94, 0.6)",
+                        "0 0 0 4px rgba(34, 197, 94, 0)",
+                    ]
+                }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
+            />
+            {/* Inner steady glow */}
+            <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500 blur-[1px]" />
+        </div>
 
         {/* Project Info - Hidden on mobile, shown on tablet/desktop */}
         <div className="hidden sm:flex items-center gap-2">

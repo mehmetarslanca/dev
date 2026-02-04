@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, ArrowRight, ArrowLeft, Loader2, ListFilter } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
@@ -118,7 +118,7 @@ export function BlogPage() {
         ) : (
           <>
             {/* Blog Posts List */}
-            <div className="max-w-4xl">
+            <div className="max-w-4xl space-y-6">
               {sortedPosts.length > 0 ? (
                 sortedPosts.map((post, index) => (
                   <motion.article
@@ -126,47 +126,47 @@ export function BlogPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="group py-8 border-b border-border last:border-0 hover:border-primary/20 transition-colors cursor-pointer"
+                    className="group relative p-8 glass-panel rounded-sm transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(255,77,77,0.1)] hover:-translate-x-[-10px] cursor-pointer"
                     onClick={() => setSelectedPost(post)}
                   >
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top duration-300" />
+
                     {/* Category Badge */}
-                    <span className="inline-block px-3 py-1 rounded-full bg-muted text-xs text-muted-foreground mb-3">
+                    <span className="inline-block px-3 py-1 rounded-sm border border-white/10 bg-white/5 text-[10px] text-muted-foreground uppercase tracking-widest mb-4 font-mono group-hover:text-primary group-hover:border-primary/30 transition-colors">
                       {post.category}
                     </span>
 
                     {/* Title */}
-                    <h2 className="text-2xl tracking-tight mb-3 group-hover:text-primary transition-colors">
+                    <h2 className="text-2xl font-bold uppercase tracking-tight mb-3 group-hover:text-primary transition-colors">
                       {post.title}
                     </h2>
 
                     {/* Excerpt */}
-                    <p className="text-muted-foreground leading-relaxed mb-4">
+                    <p className="text-muted-foreground leading-relaxed mb-6 font-light line-clamp-2">
                       {post.excerpt}
                     </p>
 
                     {/* Meta Info & Read More */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>{post.date}</span>
+                    <div className="flex items-center justify-between border-t border-white/5 pt-4">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground font-mono">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-3.5 h-3.5" />
+                          <span className="text-xs uppercase tracking-wider">{post.date}</span>
                         </div>
                       </div>
 
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="gap-1 group-hover:gap-2 group-hover:text-primary transition-all"
+                      <div
+                        className="flex items-center gap-2 text-sm font-mono uppercase tracking-widest text-muted-foreground group-hover:text-primary transition-colors"
                       >
-                        Read More
-                        <ArrowRight className="w-4 h-4" />
-                      </Button>
+                        Read Protocol
+                        <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                      </div>
                     </div>
                   </motion.article>
                 ))
               ) : (
-                <div className="text-center py-12 text-muted-foreground">
-                  No blog posts found.
+                <div className="text-center py-12 text-muted-foreground font-mono uppercase tracking-widest">
+                  System Log Empty.
                 </div>
               )}
             </div>

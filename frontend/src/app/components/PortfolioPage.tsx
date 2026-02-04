@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { Button } from "@/app/components/ui/button";
 import { Badge } from "@/app/components/ui/badge";
 import { Github, ExternalLink, Star, GitFork, Loader2 } from "lucide-react";
@@ -66,19 +66,20 @@ export function PortfolioPage() {
   };
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="min-h-screen pt-20 animate-fade-in-up">
       <section className="container mx-auto px-6 py-24">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
           className="max-w-3xl mb-16"
         >
-          <h1 className="text-3xl md:text-5xl tracking-tight mb-4">
-            Builds & Iterations / Grind
+          <h1 className="text-4xl md:text-6xl font-bold tracking-tighter uppercase mb-4 text-gradient">
+            Builds / Grind
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground">
-            Building the foundation, one commit at a time. These projects document my journey from core concepts to scalable solutions.
+          <p className="text-lg md:text-xl text-muted-foreground font-light leading-relaxed">
+            Building the foundation, one commit at a time. My digital workspace.
           </p>
         </motion.div>
 
@@ -90,11 +91,11 @@ export function PortfolioPage() {
           transition={{ delay: 0.2 }}
           className={`max-w-3xl mb-12 ${page === 1 ? 'mt-32' : 'mt-8'}`}
         >
-          <h2 className="text-2xl md:text-3xl tracking-tight mb-4 font-mono border-l-4 border-muted pl-4">
+          <h2 className="text-2xl md:text-3xl tracking-wide w-fit uppercase font-mono border-l-4 border-primary pl-4 mb-4 text-foreground/80">
              GitHub Projects
           </h2>
-          <p className="text-muted-foreground pl-5">
-             Public repositories and open-source contributions fetched directly from GitHub.
+          <p className="text-muted-foreground pl-5 font-light">
+             Public repositories and open-source contributions.
           </p>
         </motion.div>
 

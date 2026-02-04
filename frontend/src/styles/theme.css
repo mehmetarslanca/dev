@@ -44,52 +44,56 @@
 }
 
 .dark {
-  /* Professional Dark Mode - Slate Gray & Charcoal Backgrounds */
-  --background: #0f1419;
-  --foreground: #e6edf3;
-  --card: #1a1f2e;
-  --card-foreground: #e6edf3;
-  --popover: #1a1f2e;
-  --popover-foreground: #e6edf3;
-  
-  /* Crimson Red Accent - Professional Red for buttons, active states */
-  --primary: #dc2626;
+  /* Cyber-Minimalism Dark Mode */
+  --background: #0a0a0a;
+  --foreground: #f0f0f0;
+
+  /* Glassmorphism Variables */
+  --card: rgba(255, 255, 255, 0.03);
+  --card-foreground: #ffffff;
+  --popover: rgba(10, 10, 10, 0.9);
+  --popover-foreground: #ffffff;
+
+  /* Neon Red Primary */
+  --primary: #ff4d4d;
   --primary-foreground: #ffffff;
-  --secondary: #2d3748;
-  --secondary-foreground: #e6edf3;
-  --muted: #1e293b;
-  --muted-foreground: #94a3b8;
-  --accent: #2d3748;
-  --accent-foreground: #e6edf3;
-  
-  /* Destructive uses same red family */
-  --destructive: #dc2626;
+
+  --secondary: rgba(255, 255, 255, 0.08); /* Light glass */
+  --secondary-foreground: #ffffff;
+
+  --muted: rgba(255, 255, 255, 0.05); /* Faint glass */
+  --muted-foreground: #a3a3a3;
+
+  --accent: rgba(255, 77, 77, 0.1); /* Red tint */
+  --accent-foreground: #ff4d4d;
+
+  --destructive: #ff4d4d;
   --destructive-foreground: #ffffff;
   
-  /* Borders with subtle slate */
-  --border: #2d3748;
-  --input: #2d3748;
-  --ring: #dc2626;
-  
+  /* Sharp, subtle white borders */
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.1);
+  --ring: rgba(255, 77, 77, 0.5); /* Neon ring */
+
   --font-weight-medium: 500;
   --font-weight-normal: 400;
   
-  /* Chart colors with red accent integration */
-  --chart-1: #dc2626;
+  /* Chart colors */
+  --chart-1: #ff4d4d;
   --chart-2: #3b82f6;
   --chart-3: #10b981;
   --chart-4: #f59e0b;
   --chart-5: #8b5cf6;
   
-  /* Sidebar colors */
-  --sidebar: #1a1f2e;
+  /* Sidebar colors to match glass */
+  --sidebar: rgba(10, 10, 10, 0.95);
   --sidebar-foreground: #e6edf3;
-  --sidebar-primary: #dc2626;
+  --sidebar-primary: #ff4d4d;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #2d3748;
+  --sidebar-accent: rgba(255, 255, 255, 0.05);
   --sidebar-accent-foreground: #e6edf3;
-  --sidebar-border: #2d3748;
-  --sidebar-ring: #dc2626;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #ff4d4d;
 }
 
 @theme inline {

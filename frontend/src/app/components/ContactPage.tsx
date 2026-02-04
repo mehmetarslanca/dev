@@ -6,9 +6,11 @@ import { Textarea } from "@/app/components/ui/textarea";
 import { Send, Mail, Github, Linkedin, Twitter } from "lucide-react";
 import { api } from "@/app/api";
 import { toast } from "sonner";
+import { useConfig } from "@/app/context/ConfigContext";
 
 export function ContactPage() {
   const [email, setEmail] = useState("");
+  const { githubProfileUrl } = useConfig()!;
   const [message, setMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -195,7 +197,7 @@ export function ContactPage() {
               <span className="text-sm text-muted-foreground">Email</span>
             </a>
             <a
-              href="https://github.com/postaldudegoespostal"
+              href={githubProfileUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-col items-center gap-3 p-6 rounded-lg border border-border bg-card hover:border-primary/30 hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-all group"

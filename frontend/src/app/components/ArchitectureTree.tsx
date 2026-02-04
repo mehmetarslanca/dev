@@ -1,7 +1,11 @@
-import { motion } from "motion/react";
-import { useState, useEffect } from "react";
-import { Folder, FileCode, CheckCircle2, ChevronRight, ChevronDown, Lock, Loader2 } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { motion, AnimatePresence } from "motion/react";
+import { useState, useRef, useEffect } from "react";
+import { ChevronRight, ChevronDown, Folder, FileCode, FileJson, FileType, File, GitBranch, Search, X, CheckCircle2, Loader2, Lock } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/app/components/ui/badge";
+import { ScrollArea } from "@/app/components/ui/scroll-area";
+import { useConfig } from "@/app/context/ConfigContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/app/components/ui/dialog";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
@@ -12,6 +16,7 @@ interface TreeNode {
   children?: TreeNode[];
   desc?: string;
   sha?: string;
+  content?: string;
 }
 
 interface GithubTreeItem {
@@ -106,24 +111,27 @@ const TreeItem = ({ node, depth = 0, onFileClick }: { node: TreeNode; depth?: nu
 export function ArchitectureTree() {
   const [nodes, setNodes] = useState<TreeNode[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedFile, setSelectedFile] = useState<TreeNode | null>(null);
-  const [fileContent, setFileContent] = useState<string | null>(null);
   const [loadingFile, setLoadingFile] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<TreeNode | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const { githubUsername } = useConfig()!;
 
   useEffect(() => {
     const fetchTree = async () => {
       try {
         const cached = localStorage.getItem(CACHE_KEY);
         if (cached) {
-            const { data, timestamp } = JSON.parse(cached);
-            if (Date.now() - timestamp < CACHE_EXPIRY) {
-                setNodes(data);
-                setLoading(false);
-                return;
-            }
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < CACHE_EXPIRY) {
+            setNodes(data);
+            setLoading(false);
+            return;
+          }
         }
 
-        const response = await fetch("https://api.github.com/repos/postaldudegoespostal/dev/git/trees/master?recursive=1");
+        const response = await fetch(`https://api.github.com/repos/${githubUsername}/dev/git/trees/master?recursive=1`);
         if (!response.ok) throw new Error("Failed to fetch repo");
         const data: GithubTreeResponse = await response.json();
 
@@ -201,23 +209,38 @@ export function ArchitectureTree() {
       }
   };
 
-  const handleFileClick = async (node: TreeNode) => {
+  const handleFileSelect = async (node: TreeNode) => {
+    if (node.type === "file") {
+      // If we already have content, just select it
+      if (node.content) {
+        setSelectedFile(node);
+        return;
+      }
+
+      // Open dialog and show loader
       setSelectedFile(node);
       setLoadingFile(true);
-      setFileContent(null);
 
       try {
-          const res = await fetch(`https://api.github.com/repos/postaldudegoespostal/dev/git/blobs/${node.sha}`);
-          const data = await res.json();
-          // content is base64 encoded
-          const decoded = atob(data.content.replace(/\n/g, ''));
-          setFileContent(decoded);
+        const res = await fetch(`https://api.github.com/repos/${githubUsername}/dev/git/blobs/${node.sha}`);
+        if (!res.ok) throw new Error("Failed to fetch blob");
+        const data = await res.json();
+        // GitHub API returns content as base64
+        const content = atob(data.content);
+
+        // Update the node with content
+        node.content = content;
+
+        // Update state to trigger re-render with content
+        setSelectedFile({ ...node });
       } catch (e) {
-          console.error(e);
-          setFileContent("// Failed to load content.");
+        console.error(e);
+        node.content = "// Failed to load content.";
+        setSelectedFile({ ...node });
       } finally {
-          setLoadingFile(false);
+        setLoadingFile(false);
       }
+    }
   };
 
   return (
@@ -252,7 +275,7 @@ export function ArchitectureTree() {
              </div>
         ) : (
              nodes.map((node, i) => (
-               <TreeItem key={i} node={node} onFileClick={handleFileClick} />
+               <TreeItem key={i} node={node} onFileClick={handleFileSelect} />
              ))
         )}
       </div>
@@ -283,7 +306,7 @@ export function ArchitectureTree() {
                         lineNumberStyle={{ minWidth: '2.5em', paddingRight: '1em', color: '#6e6e6e' }}
                         wrapLines={true}
                     >
-                        {fileContent || ""}
+                        {selectedFile?.content || ""}
                     </SyntaxHighlighter>
                 )}
             </div>

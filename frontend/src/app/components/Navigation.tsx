@@ -19,7 +19,7 @@ export function Navigation() {
   const currentPath = location.pathname;
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-lg">
+    <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-b-white/5">
       <div className="container mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo/Name with Live Status */}
@@ -54,17 +54,17 @@ export function Navigation() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`relative px-4 py-2 transition-colors ${
+                  className={`relative px-4 py-2 transition-all duration-300 font-mono text-sm tracking-wide hover:text-primary hover:drop-shadow-[0_0_8px_rgba(255,77,77,0.5)] ${
                     isActive
-                      ? "text-foreground"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "text-primary drop-shadow-[0_0_10px_rgba(255,77,77,0.4)]"
+                      : "text-muted-foreground"
                   }`}
                 >
                   {link.name}
                   {isActive && (
                     <motion.div
                       layoutId="activeTab"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary shadow-[0_0_8px_rgba(220,38,38,0.5)]"
+                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary shadow-[0_0_15px_rgba(255,77,77,0.8)]"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}

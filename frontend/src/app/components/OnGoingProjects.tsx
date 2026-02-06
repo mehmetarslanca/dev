@@ -130,6 +130,9 @@ export function OnGoingProjects() {
             onClick={() => setSelectedProject(project)}
             className="group relative p-6 rounded-sm glass-panel transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_25px_rgba(255,77,77,0.15)] hover:-translate-y-1 flex flex-col h-full overflow-hidden cursor-pointer"
           >
+            {/* Red Indicator Sync */}
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top duration-300 z-20" />
+
             {/* Background Accent */}
             <div className="absolute top-0 right-0 p-2 opacity-5">
                 <Layers className="w-24 h-24 -mr-8 -mt-8 rotate-12" />

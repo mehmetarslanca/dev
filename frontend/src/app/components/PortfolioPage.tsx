@@ -112,8 +112,11 @@ export function PortfolioPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="group relative p-6 rounded-lg border border-border bg-card hover:border-primary/30 hover:shadow-[0_0_20px_rgba(220,38,38,0.1)] transition-all"
+                className="group relative p-6 rounded-lg glass-panel transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_20px_rgba(255,77,77,0.15)] hover:-translate-y-1 overflow-hidden"
               >
+                {/* Red Indicator Sync */}
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary scale-y-0 group-hover:scale-y-100 transition-transform origin-top duration-300" />
+
                 {/* Project Header */}
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex-1">

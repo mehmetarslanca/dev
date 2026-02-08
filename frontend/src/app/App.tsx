@@ -23,10 +23,15 @@ function AppContent() {
     document.documentElement.classList.add('dark');
   }, []);
 
+  // Scroll to top on every route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   // Map path to page name for old logic if needed, but better to use routes
   const getPageFromPath = (path: string) => {
     if (path === "/admin") return "admin";
-    if (path === "/me" || path === "/portfolio") return "me";
+    if (path === "/portfolio") return "portfolio";
     if (path === "/blog") return "blog";
     if (path === "/contact") return "contact";
     if (path === "/about") return "about";
@@ -47,7 +52,6 @@ function AppContent() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/home" element={<HomePage />} />
-            <Route path="/me" element={<PortfolioPage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/blog" element={<BlogPage />} />

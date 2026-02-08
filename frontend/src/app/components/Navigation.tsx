@@ -9,7 +9,7 @@ export function Navigation() {
 
   const links = [
     { name: "Home", path: "/" },
-    { name: "Portfolio", path: "/me" },
+    { name: "Portfolio", path: "/portfolio" },
     { name: "Blog", path: "/blog" },
     { name: "Contact", path: "/contact" },
     { name: "About Me", path: "/about" },
@@ -49,7 +49,7 @@ export function Navigation() {
             className="hidden md:flex items-center gap-1"
           >
             {links.map((link) => {
-              const isActive = currentPath === link.path || (link.path === "/me" && currentPath === "/portfolio");
+              const isActive = currentPath === link.path;
               return (
                 <Link
                   key={link.path}
@@ -97,7 +97,7 @@ export function Navigation() {
           >
             <div className="container mx-auto px-6 py-8 flex flex-col gap-6">
               {links.map((link) => {
-                const isActive = currentPath === link.path || (link.path === "/me" && currentPath === "/portfolio");
+                const isActive = currentPath === link.path;
                 return (
                   <Link
                     key={link.path}

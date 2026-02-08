@@ -7,6 +7,7 @@ import { useUser } from "@/app/context/UserContext";
 import { toast } from "sonner";
 import { api } from "@/app/api";
 import { ArchitectureTree } from "@/app/components/ArchitectureTree";
+import { GithubContributions } from "@/app/components/GithubContributions";
 import { useConfig } from "@/app/context/ConfigContext";
 
 // --- Crber-Minimalism Components ---
@@ -380,6 +381,11 @@ export function HomePage() {
                 ))}
               </div>
             </motion.div>
+          </div>
+
+          {/* GitHub Contributions */}
+          <div className="mt-32 pt-16 border-t border-white/5">
+            <GithubContributions />
           </div>
         </motion.div>
       </section>

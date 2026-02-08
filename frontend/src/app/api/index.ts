@@ -160,5 +160,8 @@ export const api = {
     add: (data: CreateTechStackRequest) => client.post('/techstacks/admin', data),
     update: (id: number, data: CreateTechStackRequest) => client.put(`/techstacks/admin/${id}`, data),
     delete: (id: number) => client.delete(`/techstacks/admin/${id}`),
+  },
+  github: {
+    getContributions: () => client.get<GithubContributionsResponse>('/github/contributions').then(res => res.data),
   }
 };

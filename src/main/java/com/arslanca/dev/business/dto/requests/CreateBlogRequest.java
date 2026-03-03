@@ -9,11 +9,10 @@ public class CreateBlogRequest {
 
     @NotBlank
     @Size (min = 5, max=250)
-
     private String title;
+
     @NotBlank
     @Size (max = 50000)
-
     private String content;
 
     private String category;

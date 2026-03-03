@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import { Code2, Clock, FileCode } from "lucide-react";
 import { api, StatsResponse } from "@/app/api";
 
@@ -85,12 +85,9 @@ export function WakaTimeLiveStatus({ }: WakaTimeLiveStatusProps) {
 
   if (loading || !isOnline || !stats) {
     return (
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded border border-white/10 bg-background/70 backdrop-blur-md" style={{ fontFamily: 'var(--font-mono)' }}>
-        <div className="relative">
-             <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
-             <div className="absolute inset-0 w-2 h-2 rounded-full bg-red-500/20 animate-pulse" />
-        </div>
-        <span className="text-sm text-muted-foreground uppercase tracking-wider">Offline</span>
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded border border-border bg-card/50" style={{ fontFamily: 'var(--font-mono)' }}>
+        <div className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+        <span className="text-sm text-muted-foreground">Offline</span>
       </div>
     );
   }
@@ -108,24 +105,18 @@ export function WakaTimeLiveStatus({ }: WakaTimeLiveStatusProps) {
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="flex items-center gap-3 px-3 py-1.5 rounded border border-border bg-[#0a0a0a] hover:bg-black hover:border-primary transition-all cursor-pointer group shadow-sm z-50 relative"
+        className="flex items-center gap-3 px-3 py-1.5 rounded border border-border bg-card/50 hover:border-primary/30 transition-all cursor-pointer group"
         style={{ fontFamily: 'var(--font-mono)' }}
       >
         {/* Pulsing Active Indicator - GREEN when online */}
-        <div className="relative flex items-center justify-center">
-            <motion.div
-                className="w-2 h-2 rounded-full bg-green-500 z-10"
-                animate={{
-                    boxShadow: [
-                        "0 0 0 0px rgba(34, 197, 94, 0.6)",
-                        "0 0 0 4px rgba(34, 197, 94, 0)",
-                    ]
-                }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeOut" }}
-            />
-            {/* Inner steady glow */}
-            <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500 blur-[1px]" />
-        </div>
+        <motion.div
+          className="relative"
+          animate={{ scale: [1, 1.2, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-2 h-2 rounded-full bg-green-500" />
+          <div className="absolute inset-0 w-2 h-2 rounded-full bg-green-500/30 animate-ping" />
+        </motion.div>
 
         {/* Project Info - Hidden on mobile, shown on tablet/desktop */}
         <div className="hidden sm:flex items-center gap-2">
@@ -156,9 +147,9 @@ export function WakaTimeLiveStatus({ }: WakaTimeLiveStatusProps) {
             transition={{ duration: 0.2 }}
             className="absolute top-full mt-2 left-0 z-50 w-72"
           >
-            <div className="rounded-sm border border-white/10 bg-background/70 backdrop-blur-md shadow-2xl overflow-hidden">
+            <div className="rounded-lg border border-border bg-card shadow-2xl overflow-hidden">
               {/* Tooltip Header */}
-              <div className="px-4 py-3 border-b border-white/10 bg-white/5">
+              <div className="px-4 py-3 border-b border-border bg-gradient-to-r from-green-500/10 to-transparent">
                 <div className="flex items-center gap-2">
                   <motion.div
                     className="w-2 h-2 rounded-full bg-green-500"

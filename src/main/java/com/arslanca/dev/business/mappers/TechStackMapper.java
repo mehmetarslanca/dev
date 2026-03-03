@@ -9,13 +9,13 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface TechStackMapper {
-    //request to entity
+    // request to entity
     TechStack toEntity(CreateTechStackRequest request);
 
-    //entity to response
+    // entity to response
     GetTechStackResponse toResponse(TechStack techStack);
 
-    //get list of responses -> frontend
+    // get list of responses -> frontend
     List<GetTechStackResponse> toResponseList(List<TechStack> techStacks);
 
     void updateEntityFromRequest(CreateTechStackRequest request, @org.mapstruct.MappingTarget TechStack techStack);

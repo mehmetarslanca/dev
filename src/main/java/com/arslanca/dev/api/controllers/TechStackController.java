@@ -1,7 +1,6 @@
 package com.arslanca.dev.api.controllers;
 
 import com.arslanca.dev.business.abstracts.TechStackService;
-import com.arslanca.dev.business.dto.requests.CreatePinnedProjectRequest;
 import com.arslanca.dev.business.dto.requests.CreateTechStackRequest;
 import com.arslanca.dev.business.dto.responses.GetTechStackResponse;
 import jakarta.validation.Valid;

@@ -9,7 +9,6 @@ import com.arslanca.dev.dataAccess.RevokedTokenRepository;
 import com.arslanca.dev.dataAccess.UserRepository;
 import com.arslanca.dev.entities.RefreshToken;
 import com.arslanca.dev.entities.RevokedToken;
-import com.arslanca.dev.entities.User;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.ConsumptionProbe;
 import jakarta.servlet.http.Cookie;
@@ -41,20 +40,17 @@ public class AuthController {
     public ResponseEntity<?> login(
             @RequestBody LoginRequest request,
             HttpServletRequest httpRequest,
-            HttpServletResponse response
-    ) {
+            HttpServletResponse response) {
         Bucket bucket = rateLimitService.resolveLoginBucket(httpRequest.getRemoteAddr());
         ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
         if (!probe.isConsumed()) {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                   .body("Too many login attempts. Please try again later.");
+                    .body("Too many login attempts. Please try again later.");
         }
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
-                        request.getPassword()
-                )
-        );
+                        request.getPassword()));
         var user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı"));
 
@@ -83,7 +79,6 @@ public class AuthController {
         accessCookie.setPath("/");
         accessCookie.setMaxAge(15 * 60);
 
-
         Cookie refreshCookie = new Cookie("refresh_token", refreshToken);
         refreshCookie.setHttpOnly(true);
         refreshCookie.setSecure(false);
@@ -93,11 +88,11 @@ public class AuthController {
         response.addCookie(refreshCookie);
         return ResponseEntity.ok(AuthenticationResponse.builder().build());
     }
+
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(
             @CookieValue(name = "refresh_token", required = false) String refreshToken,
-            HttpServletResponse response
-    ) {
+            HttpServletResponse response) {
         if (refreshToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token cookie missing");
         }
@@ -110,7 +105,7 @@ public class AuthController {
                         .orElse(null);
 
                 if (storedToken == null || storedToken.isRevoked()) {
-                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or Revoked Token");
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or Revoked Token");
                 }
 
                 storedToken.setRevoked(true);
@@ -120,11 +115,11 @@ public class AuthController {
                 String newRefreshToken = jwtService.generateRefreshToken(user);
 
                 RefreshToken rt = RefreshToken.builder()
-                    .user(user)
-                    .token(newRefreshToken)
-                    .revoked(false)
-                    .expiryDate(jwtService.extractExpiration(newRefreshToken).toInstant())
-                    .build();
+                        .user(user)
+                        .token(newRefreshToken)
+                        .revoked(false)
+                        .expiryDate(jwtService.extractExpiration(newRefreshToken).toInstant())
+                        .build();
                 refreshTokenRepository.save(rt);
 
                 Cookie accessCookie = new Cookie("access_token", newAccessToken);
@@ -147,12 +142,12 @@ public class AuthController {
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
     @PostMapping("/logout")
     public ResponseEntity<?> logout(
             @CookieValue(name = "access_token", required = false) String accessToken,
             @CookieValue(name = "refresh_token", required = false) String refreshTokenToken,
-            HttpServletResponse response
-    ) {
+            HttpServletResponse response) {
         if (refreshTokenToken != null) {
             var storedToken = refreshTokenRepository.findByToken(refreshTokenToken).orElse(null);
             if (storedToken != null) {
@@ -162,11 +157,11 @@ public class AuthController {
         }
 
         if (accessToken != null) {
-             RevokedToken revokedToken = RevokedToken.builder()
-                .token(accessToken)
-                .expiryDate(jwtService.extractExpiration(accessToken).toInstant())
-                .build();
-             revokedTokenRepository.save(revokedToken);
+            RevokedToken revokedToken = RevokedToken.builder()
+                    .token(accessToken)
+                    .expiryDate(jwtService.extractExpiration(accessToken).toInstant())
+                    .build();
+            revokedTokenRepository.save(revokedToken);
         }
 
         Cookie accessCookie = new Cookie("access_token", null);
@@ -186,6 +181,7 @@ public class AuthController {
 
         return ResponseEntity.ok("Logged out successfully");
     }
+
     @GetMapping("/check")
     public ResponseEntity<?> checkStatus() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

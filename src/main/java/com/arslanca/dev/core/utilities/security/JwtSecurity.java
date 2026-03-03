@@ -38,6 +38,7 @@ public class JwtSecurity {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
     public String generateToken(UserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
